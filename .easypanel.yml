@@ -3,10 +3,12 @@ host: energycalls.celesc.com.br
 port: 5000
 type: dockerfile
 
-# Configuração do Build - simplificado sem args
+# Configuração do Build - forçar rebuild completo
 build:
   dockerfile: Dockerfile
   timeout: 1800  # 30 minutos
+  no_cache: true  # Forçar rebuild completo
+  auto_rebuild: true  # Reconstruir automaticamente
 
 # Configuração de Execução - usando comando direto
 run:
