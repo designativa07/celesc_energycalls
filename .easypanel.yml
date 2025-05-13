@@ -27,9 +27,9 @@ env:
   DB_PASSWORD: ${POSTGRES_PASSWORD}
   JWT_SECRET: ${JWT_SECRET}
   JWT_EXPIRES_IN: 24h
-  
-# Health check para garantir que o serviço está funcionando
-health:
-  path: /api
-  interval: 30s
-  timeout: 10s 
+
+# Desabilitar health check temporariamente
+# health:
+#   path: /api
+#   interval: 30s
+#   timeout: 10s 

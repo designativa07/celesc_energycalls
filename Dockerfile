@@ -7,13 +7,24 @@ RUN apk --no-cache add python3 make g++
 # Diretório de trabalho
 WORKDIR /app
 
-# Copiar todo o código fonte
+# Copiar arquivos de package.json primeiro
+COPY package*.json ./
+COPY client/package*.json ./client/
+COPY server/package*.json ./server/
+
+# Instalar dependências (apenas produção no servidor para reduzir tamanho)
+RUN npm install && \
+    cd server && npm install --only=production && cd .. && \
+    cd client && npm install
+
+# Copiar código fonte
 COPY . .
 
-# Instalar dependências e construir
-RUN npm install --production=false && \
-    cd server && npm install --production=false && cd .. && \
-    cd client && npm install --production=false && npm run build && cd ..
+# Construir o cliente
+RUN cd client && npm run build
+
+# Limpar dependências de desenvolvimento do cliente para reduzir tamanho
+RUN cd client && npm prune --production
 
 # Definir variáveis de ambiente
 ENV NODE_ENV=production
