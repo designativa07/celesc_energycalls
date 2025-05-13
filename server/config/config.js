@@ -1,23 +1,25 @@
+require('dotenv').config();
+
 module.exports = {
   // Variáveis do Banco de Dados
   database: {
-    name: 'energycalls',
-    user: 'energycalls',
-    password: 'MKHV392AMAbegHH',
-    host: 'localhost',
-    port: 5432,
+    name: process.env.DB_NAME || 'energycalls',
+    user: process.env.DB_USER || 'energycalls',
+    password: process.env.DB_PASSWORD || 'MKHV392AMAbegHH',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
     dialect: 'postgres'
   },
   
   // Variáveis da Aplicação
   app: {
-    port: 5000,
-    environment: 'development'
+    port: process.env.PORT || 5000,
+    environment: process.env.NODE_ENV || 'development'
   },
   
   // Variáveis de Segurança
   security: {
-    jwtSecret: 'celesc_energy_calls_secure_token_2025',
-    jwtExpiresIn: '1d'
+    jwtSecret: process.env.JWT_SECRET || 'celesc_energy_calls_secure_token_2025',
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d'
   }
 }; 
