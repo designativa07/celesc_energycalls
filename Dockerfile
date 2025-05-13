@@ -18,10 +18,15 @@ WORKDIR /app
 # Copiar todo o código fonte
 COPY . .
 
-# Instalar dependências e construir
-RUN npm install && \
-    cd server && npm install && cd .. && \
-    cd client && npm install && npm run build
+# Instalar dependências raiz, evitando o script install que causa recursão
+RUN npm ci --ignore-scripts
+
+# Instalar dependências do servidor e do cliente separadamente
+RUN cd server && npm ci
+RUN cd client && npm ci
+
+# Construir o cliente
+RUN cd client && npm run build
 
 # Expor porta
 EXPOSE 5000
