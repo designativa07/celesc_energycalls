@@ -22,8 +22,6 @@ run:
     DB_USER: energycalls
     DB_PASSWORD: MKHV392AMAbegHH
 
-# Sem health check e sem variáveis de ambiente - tudo definido no Dockerfile 
-
 # Serviços adicionais
 services:
   postgres:
