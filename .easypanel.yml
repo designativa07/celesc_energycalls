@@ -3,15 +3,32 @@ host: energycalls.celesc.com.br
 port: 5000
 type: dockerfile
 
-# Configuração do Build - forçar rebuild completo
+# Configuração do Build
 build:
   dockerfile: Dockerfile
   timeout: 1800  # 30 minutos
   no_cache: true  # Forçar rebuild completo
   auto_rebuild: true  # Reconstruir automaticamente
 
-# Configuração de Execução - usando comando direto
+# Configuração de Execução
 run:
   command: node server/server.js
+  env:
+    NODE_ENV: production
+    PORT: 5000
+    DB_HOST: postgres  # Usando o serviço postgres interno do EasyPanel
+    DB_PORT: 5432
+    DB_NAME: energycalls
+    DB_USER: energycalls
+    DB_PASSWORD: MKHV392AMAbegHH
 
 # Sem health check e sem variáveis de ambiente - tudo definido no Dockerfile 
+
+# Serviços adicionais
+services:
+  postgres:
+    image: postgres:14
+    env:
+      POSTGRES_DB: energycalls
+      POSTGRES_USER: energycalls
+      POSTGRES_PASSWORD: MKHV392AMAbegHH 
