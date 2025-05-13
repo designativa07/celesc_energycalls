@@ -1,5 +1,28 @@
 {
+  "name": "energycalls",
+  "version": "1.0.0",
+  "description": "Sistema de gestão de chamadas de compra e venda de energia para a CELESC",
+  "main": "index.js",
+  "scripts": {
+    "install": "npm run install:server && npm run install:client",
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "build": "npm run build:client",
+    "build:client": "cd client && npm run build",
+    "start": "node server/server.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm start"
+  },
+  "keywords": [
+    "energia",
+    "celesc",
+    "chamadas",
+    "api"
+  ],
+  "author": "CELESC",
+  "license": "ISC",
   "dependencies": {
-    "sqlite3": "^5.1.7"
+    "concurrently": "^8.2.2"
   }
 }

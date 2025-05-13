@@ -1,0 +1,27 @@
+name: energycalls
+host: energycalls.celesc.com.br
+port: 5000
+type: node
+
+# Configuração do Build
+build:
+  command: npm install && npm run build
+  env:
+    NODE_ENV: production
+
+# Configuração de Execução
+run:
+  command: npm start
+  env:
+    NODE_ENV: production
+    PORT: 5000
+
+# Configuração do Database
+env:
+  DB_HOST: ${POSTGRES_HOST}
+  DB_PORT: ${POSTGRES_PORT}
+  DB_NAME: ${POSTGRES_DB}
+  DB_USER: ${POSTGRES_USER}
+  DB_PASSWORD: ${POSTGRES_PASSWORD}
+  JWT_SECRET: ${JWT_SECRET}
+  JWT_EXPIRES_IN: 24h 
