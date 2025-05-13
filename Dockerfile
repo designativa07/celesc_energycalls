@@ -1,6 +1,9 @@
 # Imagem base com Node.js LTS
 FROM node:16-alpine
 
+# Instalar ferramentas necessárias para builds
+RUN apk --no-cache add python3 make g++
+
 # Configurar variáveis de ambiente
 ENV NODE_ENV=production
 ENV PORT=5000
@@ -15,11 +18,21 @@ ENV JWT_EXPIRES_IN=24h
 # Diretório de trabalho
 WORKDIR /app
 
-# Copiar todo o código fonte
+# Copiar os arquivos package.json primeiro para melhor uso de cache
+COPY package*.json ./
+COPY client/package*.json ./client/
+COPY server/package*.json ./server/
+
+# Instalar dependências
+RUN npm ci --ignore-scripts && \
+    cd server && npm ci --only=production && cd .. && \
+    cd client && npm ci
+
+# Copiar o restante do código fonte
 COPY . .
 
-# Instalar apenas as dependências do servidor
-RUN cd server && npm ci --only=production
+# Construir o frontend
+RUN cd client && npm run build
 
 # Expor porta
 EXPOSE 5000
