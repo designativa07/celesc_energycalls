@@ -3,33 +3,13 @@ host: energycalls.celesc.com.br
 port: 5000
 type: dockerfile
 
-# Configuração do Build
+# Configuração do Build - simplificado sem args
 build:
   dockerfile: Dockerfile
   timeout: 1800  # 30 minutos
-  args:
-    NODE_ENV: production
 
-# Configuração de Execução
+# Configuração de Execução - usando comando direto
 run:
   command: node server/server.js
-  env:
-    NODE_ENV: production
-    PORT: 5000
-    DEBUG: 'true'
 
-# Configuração do Database
-env:
-  DB_HOST: ${POSTGRES_HOST}
-  DB_PORT: ${POSTGRES_PORT}
-  DB_NAME: ${POSTGRES_DB}
-  DB_USER: ${POSTGRES_USER}
-  DB_PASSWORD: ${POSTGRES_PASSWORD}
-  JWT_SECRET: ${JWT_SECRET}
-  JWT_EXPIRES_IN: 24h
-
-# Desabilitar health check temporariamente
-# health:
-#   path: /api
-#   interval: 30s
-#   timeout: 10s 
+# Sem health check e sem variáveis de ambiente - tudo definido no Dockerfile 

@@ -1,17 +1,26 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const config = require('./config/config');
-let sequelize;
+
+// Interceptar erros globais para evitar travamentos
+process.on('uncaughtException', (error) => {
+  console.error('ERRO NÃO CAPTURADO:', error);
+  // Não deixar o processo terminar
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('PROMESSA NÃO TRATADA:', reason);
+  // Não deixar o processo terminar
+});
+
+// Inicialização do Express
+const app = express();
 
 // Logs para depuração na inicialização
 console.log('========= INICIANDO SERVIDOR =========');
 console.log('Ambiente:', process.env.NODE_ENV);
 console.log('Porta:', process.env.PORT);
 console.log('Diretório do servidor:', __dirname);
-
-// Inicialização do Express
-const app = express();
 
 // Middleware
 app.use(cors());
@@ -23,10 +32,32 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// Tentar carregar o banco de dados, mas continuar mesmo que falhe
+// Rota API básica que sempre funciona
+app.get('/api', (req, res) => {
+  res.status(200).json({ 
+    message: 'API do EnergyCalls - Sistema de Gerenciamento de Chamadas de Energia da CELESC',
+    status: 'online',
+    version: '1.0.0',
+    time: new Date().toISOString()
+  });
+});
+
+// Tentar carregar a configuração e o banco de dados, mas continuar mesmo que falhe
+let config;
+try {
+  config = require('./config/config');
+  console.log('Configuração carregada com sucesso');
+} catch (error) {
+  console.error('Erro ao carregar configuração:', error);
+  config = {
+    app: { port: process.env.PORT || 5000 }
+  };
+}
+
+// Tentar carregar o banco de dados e as rotas, mas continuar mesmo que falhe
 try {
   console.log('Tentando carregar configuração do banco de dados...');
-  sequelize = require('./config/database');
+  const sequelize = require('./config/database');
   
   // Importação dos modelos
   require('./models');
@@ -48,33 +79,45 @@ try {
   console.log('Rotas API configuradas com sucesso');
 } catch (error) {
   console.error('Erro ao configurar banco de dados ou rotas:', error);
-  
-  // Rota API básica para indicar que o servidor está funcionando, mesmo sem banco
-  app.use('/api', (req, res) => {
-    res.status(503).json({ 
-      message: 'API do EnergyCalls - Banco de dados indisponível',
-      status: 'maintenance'
-    });
-  });
 }
 
 // Verificar se estamos em produção
 if (process.env.NODE_ENV === 'production') {
-  console.log('Servindo arquivos estáticos de:', path.join(__dirname, '../client/build'));
-  
   try {
-    // Servir arquivos estáticos da pasta build do cliente
-    app.use(express.static(path.join(__dirname, '../client/build')));
+    console.log('Servindo arquivos estáticos de:', path.join(__dirname, '../client/build'));
     
-    // Para qualquer rota não-API, retornar o app React
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-    });
+    // Verificar se o diretório existe antes de servi-lo
+    const fs = require('fs');
+    const clientBuildPath = path.join(__dirname, '../client/build');
+    
+    if (fs.existsSync(clientBuildPath)) {
+      // Servir arquivos estáticos da pasta build do cliente
+      app.use(express.static(clientBuildPath));
+      
+      // Para qualquer rota não-API, retornar o app React
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+      });
+      
+      console.log('Arquivos estáticos configurados com sucesso');
+    } else {
+      console.error('Diretório de build do cliente não encontrado:', clientBuildPath);
+      
+      // Fallback para uma resposta básica
+      app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api')) {
+          res.status(503).send('Sistema em manutenção. Frontend não disponível.');
+        }
+      });
+    }
   } catch (error) {
     console.error('Erro ao servir arquivos estáticos:', error);
+    
     // Fallback para uma resposta básica
     app.get('*', (req, res) => {
-      res.status(503).send('Sistema em manutenção. Tente novamente mais tarde.');
+      if (!req.path.startsWith('/api')) {
+        res.status(503).send('Sistema em manutenção. Tente novamente mais tarde.');
+      }
     });
   }
 } else {
@@ -82,16 +125,20 @@ if (process.env.NODE_ENV === 'production') {
   app.get('/', (req, res) => {
     res.json({ message: 'API do EnergyCalls - Sistema de Gerenciamento de Chamadas de Energia da CELESC' });
   });
-
-  // Manipulação de rotas não encontradas em desenvolvimento
-  app.use((req, res) => {
-    res.status(404).json({ message: 'Rota não encontrada' });
-  });
 }
+
+// Manipulação de rotas não encontradas
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    res.status(404).json({ message: 'Rota não encontrada' });
+  } else {
+    next();
+  }
+});
 
 // Manipulação de erros
 app.use((err, req, res, next) => {
-  console.error('Erro na aplicação:', err.stack);
+  console.error('Erro na aplicação:', err);
   res.status(500).json({ 
     message: 'Erro interno do servidor',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
@@ -99,7 +146,7 @@ app.use((err, req, res, next) => {
 });
 
 // Porta do servidor
-const PORT = config.app.port || 5000;
+const PORT = process.env.PORT || config.app.port || 5000;
 
 // Iniciar o servidor independentemente do banco de dados
 app.listen(PORT, () => {
