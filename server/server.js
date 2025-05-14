@@ -102,6 +102,92 @@ if (process.env.NODE_ENV === 'production') {
     const fs = require('fs');
     const clientBuildPath = path.join(__dirname, '../client/build');
     
+    // Se o diretório de build não existir, criar um com um arquivo HTML básico
+    if (!fs.existsSync(clientBuildPath)) {
+      console.log('Diretório de build não encontrado. Criando um básico...');
+      try {
+        fs.mkdirSync(clientBuildPath, { recursive: true });
+        const basicHtml = `
+          <!DOCTYPE html>
+          <html lang="pt-br">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>EnergyCalls CELESC</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 0;
+                color: #333;
+                background-color: #f5f5f5;
+              }
+              .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem;
+              }
+              header {
+                background-color: #004a93;
+                color: white;
+                padding: 1rem 0;
+                text-align: center;
+              }
+              main {
+                background: white;
+                padding: 2rem;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                margin-top: 2rem;
+              }
+              h1 {
+                color: #004a93;
+              }
+              .btn {
+                display: inline-block;
+                background: #004a93;
+                color: white;
+                padding: 0.5rem 1rem;
+                text-decoration: none;
+                border-radius: 4px;
+                margin-top: 1rem;
+              }
+              footer {
+                text-align: center;
+                margin-top: 2rem;
+                padding: 1rem 0;
+                color: #666;
+              }
+            </style>
+          </head>
+          <body>
+            <header>
+              <div class="container">
+                <h1>EnergyCalls CELESC</h1>
+              </div>
+            </header>
+            <div class="container">
+              <main>
+                <h2>Bem-vindo ao Sistema de Chamadas de Energia da CELESC</h2>
+                <p>Este é um sistema temporário para gerenciamento de chamadas de energia.</p>
+                <p>O frontend completo estará disponível em breve.</p>
+                <a href="/api" class="btn">Acessar API</a>
+              </main>
+              <footer>
+                <p>&copy; CELESC ${new Date().getFullYear()}. Todos os direitos reservados.</p>
+              </footer>
+            </div>
+          </body>
+          </html>
+        `;
+        fs.writeFileSync(path.join(clientBuildPath, 'index.html'), basicHtml);
+        console.log('Criado arquivo index.html básico no diretório de build');
+      } catch (e) {
+        console.error('Erro ao criar diretório de build e arquivo HTML:', e);
+      }
+    }
+    
     if (fs.existsSync(clientBuildPath)) {
       // Servir arquivos estáticos da pasta build do cliente
       app.use(express.static(clientBuildPath));
@@ -114,11 +200,37 @@ if (process.env.NODE_ENV === 'production') {
       console.log('Arquivos estáticos configurados com sucesso');
     } else {
       console.error('Diretório de build do cliente não encontrado:', clientBuildPath);
+      console.error('Conteúdo do diretório client:', fs.existsSync(path.join(__dirname, '../client')) ? 
+        fs.readdirSync(path.join(__dirname, '../client')).join(', ') : 'Diretório client não existe');
       
       // Fallback para uma resposta básica
       app.get('*', (req, res) => {
         if (!req.path.startsWith('/api')) {
-          res.status(503).send('Sistema em manutenção. Frontend não disponível.');
+          res.status(503).send(`
+            <html>
+              <head>
+                <title>Sistema em manutenção</title>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+                  .container { max-width: 800px; margin: 40px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+                  h1 { color: #2c3e50; }
+                  .info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>Sistema em manutenção</h1>
+                  <p>Frontend não disponível no momento. Por favor, tente novamente mais tarde.</p>
+                  <div class="info">
+                    <p>Informações técnicas:</p>
+                    <p>Diretório esperado: ${clientBuildPath}</p>
+                    <p>Diretório existe: ${fs.existsSync(clientBuildPath)}</p>
+                    <p>NODE_ENV: ${process.env.NODE_ENV}</p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `);
         }
       });
     }
@@ -128,7 +240,7 @@ if (process.env.NODE_ENV === 'production') {
     // Fallback para uma resposta básica
     app.get('*', (req, res) => {
       if (!req.path.startsWith('/api')) {
-        res.status(503).send('Sistema em manutenção. Tente novamente mais tarde.');
+        res.status(503).send('Sistema em manutenção. Tente novamente mais tarde. Erro: ' + error.message);
       }
     });
   }
