@@ -4,6 +4,11 @@ const { verifyToken, isManagerOrAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Rota de teste - remover depois
+router.get('/test', (req, res) => {
+  res.status(200).json({ message: 'Teste de API funcionando!' });
+});
+
 // TEMPORARIAMENTE DESABILITADO PARA TESTES - Rotas protegidas - Requerem autenticação
 // router.use(verifyToken);
 

@@ -42,6 +42,12 @@ app.get('/api', (req, res) => {
   });
 });
 
+// Logging de todas as requisições para debug
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Tentar carregar a configuração e o banco de dados, mas continuar mesmo que falhe
 let config;
 try {
