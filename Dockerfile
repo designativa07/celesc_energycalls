@@ -20,19 +20,14 @@ WORKDIR /app
 
 # Copiar os arquivos package.json primeiro para melhor uso de cache
 COPY package*.json ./
-COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
-# Instalar dependências
-RUN npm install && \
-    cd server && npm install --only=production && cd .. && \
-    cd client && npm install
+# Instalar dependências do servidor e do projeto principal
+RUN npm install --ignore-scripts && \
+    cd server && npm install --only=production
 
 # Copiar o restante do código fonte
 COPY . .
-
-# Construir o frontend
-RUN cd client && npm run build
 
 # Expor porta
 EXPOSE 5000
