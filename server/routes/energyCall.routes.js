@@ -4,8 +4,11 @@ const { verifyToken, isManagerOrAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Rotas protegidas - Requerem autenticação
-// router.use(verifyToken);  // Comentando temporariamente para teste
+// TEMPORARIAMENTE DESABILITADO PARA TESTES - Rotas protegidas - Requerem autenticação
+// router.use(verifyToken);
+
+// Obter estatísticas de chamadas
+router.get('/stats', energyCallController.getCallStats);
 
 // Obter todas as chamadas de energia
 router.get('/', energyCallController.getAllEnergyCalls);
@@ -16,8 +19,8 @@ router.get('/:id', energyCallController.getEnergyCallById);
 // Gerar relatório de chamada de energia
 router.get('/:id/report', energyCallController.generateCallReport);
 
-// Rotas protegidas - Requerem autenticação e permissão de gerente ou admin
-// router.use(isManagerOrAdmin);  // Comentando temporariamente para teste
+// TEMPORARIAMENTE DESABILITADO PARA TESTES - Rotas protegidas - Requerem autenticação e permissão de gerente ou admin
+// router.use(isManagerOrAdmin);
 
 // Criar nova chamada de energia
 router.post('/', energyCallController.createEnergyCall);

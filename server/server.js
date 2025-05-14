@@ -68,6 +68,9 @@ try {
   const energyCallRoutes = require('./routes/energyCall.routes');
   const proposalRoutes = require('./routes/proposal.routes');
   const counterpartRoutes = require('./routes/counterpart.routes');
+  const counterpartAuthRoutes = require('./routes/counterpart-auth.routes');
+  const counterpartPortalRoutes = require('./routes/counterpart-portal.routes');
+  const adminRoutes = require('./routes/admin.routes');
   
   // Uso das rotas API
   app.use('/api/auth', authRoutes);
@@ -75,6 +78,9 @@ try {
   app.use('/api/calls', energyCallRoutes);
   app.use('/api/proposals', proposalRoutes);
   app.use('/api/counterparts', counterpartRoutes);
+  app.use('/api/counterpart-auth', counterpartAuthRoutes);
+  app.use('/api/counterpart-portal', counterpartPortalRoutes);
+  app.use('/api/admin', adminRoutes);
   
   console.log('Rotas API configuradas com sucesso');
 } catch (error) {

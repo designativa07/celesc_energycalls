@@ -31,6 +31,11 @@ const Counterpart = sequelize.define('Counterpart', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  accessCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'Código de acesso para login da contraparte'
+  },
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true

@@ -1,5 +1,6 @@
 const { Counterpart } = require('../models');
 const { Op } = require('sequelize');
+const sequelize = require('../config/database');
 
 // Obter todas as contrapartes
 exports.getAllCounterparts = async (req, res) => {
@@ -12,10 +13,10 @@ exports.getAllCounterparts = async (req, res) => {
     if (search) {
       whereCondition = {
         [Op.or]: [
-          { companyName: { [Op.iLike]: `%${search}%` } },
-          { cnpj: { [Op.iLike]: `%${search}%` } },
-          { contactName: { [Op.iLike]: `%${search}%` } },
-          { email: { [Op.iLike]: `%${search}%` } }
+          { companyName: { [Op.like]: `%${search}%` } },
+          { cnpj: { [Op.like]: `%${search}%` } },
+          { contactName: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } }
         ]
       };
     }
@@ -30,13 +31,44 @@ exports.getAllCounterparts = async (req, res) => {
       whereCondition.homologated = homologated === 'true';
     }
     
-    const counterparts = await Counterpart.findAll({
-      where: whereCondition,
-      order: [['companyName', 'ASC']]
-    });
-    
-    res.status(200).json(counterparts);
+    try {
+      const counterparts = await Counterpart.findAll({
+        where: whereCondition,
+        order: [['companyName', 'ASC']]
+      });
+      
+      res.status(200).json(counterparts);
+    } catch (dbError) {
+      // Se ocorrer um erro relacionado à coluna accessCode, tente executar a migração
+      if (dbError.message && dbError.message.includes('accessCode')) {
+        console.error('Erro accessCode - tentando realizar migração automática');
+        
+        try {
+          // Adiciona a coluna accessCode se não existir
+          await sequelize.query(
+            `ALTER TABLE "Counterparts" ADD COLUMN IF NOT EXISTS "accessCode" VARCHAR(255) NULL`
+          );
+          
+          // Tenta novamente a consulta
+          const counterparts = await Counterpart.findAll({
+            where: whereCondition,
+            order: [['companyName', 'ASC']]
+          });
+          
+          res.status(200).json(counterparts);
+        } catch (migrationError) {
+          console.error('Erro ao realizar migração automática:', migrationError);
+          res.status(500).json({ 
+            message: 'Erro ao buscar contrapartes (falha na migração automática)', 
+            error: migrationError.message 
+          });
+        }
+      } else {
+        throw dbError;
+      }
+    }
   } catch (error) {
+    console.error('Error in getAllCounterparts:', error);
     res.status(500).json({ 
       message: 'Erro ao buscar contrapartes', 
       error: error.message 
@@ -222,6 +254,19 @@ exports.homologateCounterpart = async (req, res) => {
   } catch (error) {
     res.status(500).json({ 
       message: 'Erro ao homologar contraparte', 
+      error: error.message 
+    });
+  }
+};
+
+// Contar contrapartes
+exports.countCounterparts = async (req, res) => {
+  try {
+    const count = await Counterpart.count();
+    res.status(200).json({ count });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Erro ao contar contrapartes', 
       error: error.message 
     });
   }

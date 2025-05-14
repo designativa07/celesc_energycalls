@@ -1,8 +1,14 @@
 # Dependências
 node_modules/
-npm-debug.log
-yarn-debug.log
-yarn-error.log
+.pnp
+.pnp.js
+
+# Arquivos de debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
 
 # Arquivos de ambiente
 .env
@@ -11,25 +17,29 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
-# Diretórios de build
+# Arquivos de build
 /build
 /dist
+.cache/
+client/build
 
-# Arquivos de sistema
+# Arquivos do sistema
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs
-logs
-*.log
+# Arquivos IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.vs/
 
-# Arquivos de banco de dados de desenvolvimento
+# Arquivos de banco de dados local
 *.sqlite
-*.db
-
-# Arquivos de cobertura de teste
-/coverage
+*.sqlite3
+db.json
 
 # Outros
-.idea/
-.vscode/ 
+.tmp/
+coverage/ 

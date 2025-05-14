@@ -1,95 +1,77 @@
-# EnergyCalls - CELESC
+# EnergyCalls - Sistema de Gerenciamento de Chamadas de Energia
 
-Sistema de gestão de chamadas de compra e venda de energia para a CELESC (Centrais Elétricas de Santa Catarina).
-
-## Descrição
-
-EnergyCalls é uma aplicação web completa que digitaliza e otimiza o processo de chamadas de compra e venda de energia, que anteriormente era feito de forma manual. O sistema permite gerenciar todo o ciclo de vida das chamadas de energia, desde a criação até o registro na CCEE (Câmara de Comercialização de Energia Elétrica).
+Um sistema web para gerenciamento de chamadas de energia da CELESC, facilitando a comunicação entre a empresa e seus fornecedores/contrapartes.
 
 ## Funcionalidades
 
-- Autenticação e autorização de usuários com diferentes níveis de permissão
-- Gestão de contrapartes (homologação, ativação/desativação)
-- Criação, publicação, fechamento e cancelamento de chamadas de energia
-- Recebimento e avaliação de propostas
-- Registro de chamadas na CCEE
-- Geração de relatórios
+- Cadastro e gerenciamento de chamadas de energia
+- Cadastro e homologação de contrapartes
+- Portal da contraparte para envio de propostas
+- Avaliação e seleção de propostas
+- Relatórios e estatísticas
 
-## Tecnologias Utilizadas
+## Tecnologias
 
 ### Backend
 - Node.js
-- Express
-- PostgreSQL
+- Express.js
 - Sequelize ORM
-- JWT para autenticação
+- PostgreSQL
 
 ### Frontend
-- React
+- React.js
 - Material-UI
-- React Router
 - Axios
 
-## Requisitos
+## Estrutura do Projeto
 
-- Node.js 16+
-- PostgreSQL 12+
-- NPM ou Yarn
+```
+energycalls/
+├── client/            # Aplicação React (frontend)
+├── server/            # Aplicação Node.js (backend)
+│   ├── config/        # Configurações
+│   ├── controllers/   # Controladores da API
+│   ├── middleware/    # Middleware personalizado
+│   ├── models/        # Modelos do Sequelize
+│   ├── routes/        # Rotas da API
+│   └── scripts/       # Scripts utilitários
+└── docs/              # Documentação
+```
 
 ## Instalação
 
+### Pré-requisitos
+- Node.js (v18+)
+- PostgreSQL
+
 ### Backend
-
 ```bash
-# Acessar o diretório do servidor
 cd server
-
-# Instalar dependências
 npm install
-
-# Configurar variáveis de ambiente
-# Criar um arquivo .env com as seguintes informações:
-# PORT=5000
-# DB_HOST=localhost
-# DB_PORT=5432
-# DB_NAME=energycalls
-# DB_USER=postgres
-# DB_PASSWORD=sua_senha
-# JWT_SECRET=sua_chave_secreta
-# JWT_EXPIRES_IN=24h
-
-# Iniciar o servidor em modo de desenvolvimento
 npm run dev
 ```
 
 ### Frontend
-
 ```bash
-# Acessar o diretório do cliente
 cd client
-
-# Instalar dependências
 npm install
-
-# Iniciar o cliente em modo de desenvolvimento
 npm start
 ```
 
-## Estrutura do Projeto
+## Uso
 
-- `/server` - API backend
-  - `/controllers` - Controladores da aplicação
-  - `/models` - Modelos de dados
-  - `/routes` - Rotas da API
-  - `/middleware` - Middlewares
-  - `/config` - Configurações
+1. Acesse o sistema como administrador em http://localhost:3000
+2. Cadastre e homologue contrapartes
+3. Crie chamadas de energia
+4. As contrapartes podem acessar o portal via http://localhost:3000/counterpart-login
 
-- `/client` - Interface de usuário
-  - `/src/pages` - Páginas da aplicação
-  - `/src/components` - Componentes reutilizáveis
-  - `/src/contexts` - Contextos para gerenciamento de estado
-  - `/src/api` - Configuração e chamadas de API
+## Portal da Contraparte
+
+Para que uma contraparte possa acessar o sistema:
+1. Ela deve estar cadastrada e homologada no sistema
+2. Um administrador deve gerar um código de acesso para a contraparte
+3. A contraparte poderá fazer login usando seu CNPJ e o código de acesso gerado
 
 ## Licença
 
-Este projeto foi desenvolvido para a CELESC (Centrais Elétricas de Santa Catarina). 
+[MIT](LICENSE) 

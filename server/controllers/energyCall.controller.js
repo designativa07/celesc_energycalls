@@ -91,6 +91,8 @@ exports.getEnergyCallById = async (req, res) => {
   try {
     const { id } = req.params;
     
+    console.log(`Tentando buscar chamada de energia com ID: ${id}`);
+    
     const energyCall = await EnergyCall.findByPk(id, {
       include: [
         {
@@ -121,11 +123,14 @@ exports.getEnergyCallById = async (req, res) => {
     });
     
     if (!energyCall) {
+      console.log(`Chamada de energia com ID ${id} não encontrada`);
       return res.status(404).json({ message: 'Chamada de energia não encontrada' });
     }
     
+    console.log(`Chamada de energia com ID ${id} encontrada com sucesso`);
     res.status(200).json(energyCall);
   } catch (error) {
+    console.error(`Erro ao buscar chamada de energia com ID ${req.params.id}:`, error);
     res.status(500).json({ 
       message: 'Erro ao buscar chamada de energia', 
       error: error.message 
@@ -150,8 +155,8 @@ exports.createEnergyCall = async (req, res) => {
       status
     } = req.body;
     
-    // O criador é o usuário autenticado
-    const creatorId = req.user.id;
+    // O criador é o usuário autenticado ou um ID temporário para testes
+    const creatorId = req.user?.id || 1; // Usando ID 1 como fallback para testes
     
     const energyCall = await EnergyCall.create({
       title,
@@ -294,6 +299,9 @@ exports.closeEnergyCall = async (req, res) => {
       });
     }
     
+    // Obter o ID do usuário (se disponível)
+    const userId = req.user ? req.user.id : null;
+    
     // Validar a proposta vencedora se fornecida
     if (winningProposalId) {
       const winningProposal = energyCall.Proposals.find(p => p.id === parseInt(winningProposalId));
@@ -308,7 +316,7 @@ exports.closeEnergyCall = async (req, res) => {
       await winningProposal.update({ 
         status: 'accepted',
         responseDate: new Date(),
-        respondedBy: req.user.id
+        respondedBy: userId
       });
       
       // Atualizar status das outras propostas
@@ -317,7 +325,7 @@ exports.closeEnergyCall = async (req, res) => {
           await proposal.update({ 
             status: 'rejected',
             responseDate: new Date(),
-            respondedBy: req.user.id
+            respondedBy: userId
           });
         }
       }
@@ -326,7 +334,7 @@ exports.closeEnergyCall = async (req, res) => {
     // Fechar a chamada
     await energyCall.update({ 
       status: 'closed',
-      closedBy: req.user.id,
+      closedBy: userId,
       closedAt: new Date(),
       winningProposalId: winningProposalId || null
     });
@@ -336,6 +344,7 @@ exports.closeEnergyCall = async (req, res) => {
       energyCall
     });
   } catch (error) {
+    console.error('Erro ao fechar chamada:', error);
     res.status(500).json({ 
       message: 'Erro ao fechar chamada de energia', 
       error: error.message 
@@ -362,10 +371,13 @@ exports.cancelEnergyCall = async (req, res) => {
       });
     }
     
+    // Obter o ID do usuário (se disponível)
+    const userId = req.user ? req.user.id : null;
+    
     await energyCall.update({ 
       status: 'canceled',
       notes: reason || 'Cancelada pelo usuário',
-      closedBy: req.user.id,
+      closedBy: userId,
       closedAt: new Date()
     });
     
@@ -374,6 +386,7 @@ exports.cancelEnergyCall = async (req, res) => {
       energyCall
     });
   } catch (error) {
+    console.error('Erro ao cancelar chamada:', error);
     res.status(500).json({ 
       message: 'Erro ao cancelar chamada de energia', 
       error: error.message 
@@ -412,6 +425,7 @@ exports.registerInCCEE = async (req, res) => {
       energyCall
     });
   } catch (error) {
+    console.error('Erro ao registrar chamada na CCEE:', error);
     res.status(500).json({ 
       message: 'Erro ao registrar chamada na CCEE', 
       error: error.message 
@@ -505,6 +519,44 @@ exports.generateCallReport = async (req, res) => {
   } catch (error) {
     res.status(500).json({ 
       message: 'Erro ao gerar relatório', 
+      error: error.message 
+    });
+  }
+};
+
+// Obter estatísticas de chamadas
+exports.getCallStats = async (req, res) => {
+  try {
+    // Contagem de chamadas ativas (status = open)
+    const activeCalls = await EnergyCall.count({
+      where: { status: 'open' }
+    });
+    
+    // Contagem de chamadas concluídas (status = completed)
+    const completedCalls = await EnergyCall.count({
+      where: { status: 'completed' }
+    });
+    
+    // Contagem de propostas pendentes
+    const pendingProposals = await Proposal.count({
+      where: { status: 'pending' },
+      include: [
+        {
+          model: EnergyCall,
+          where: { status: 'open' }
+        }
+      ]
+    });
+    
+    res.status(200).json({
+      activeCalls,
+      completedCalls,
+      pendingProposals
+    });
+  } catch (error) {
+    console.error('Erro ao obter estatísticas:', error);
+    res.status(500).json({ 
+      message: 'Erro ao obter estatísticas', 
       error: error.message 
     });
   }
