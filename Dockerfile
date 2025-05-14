@@ -29,6 +29,12 @@ RUN npm install --ignore-scripts && \
 # Copiar o restante do código fonte
 COPY . .
 
+# Criar diretório para o frontend e copiar arquivos pré-construídos, se existirem
+RUN mkdir -p /app/client/build
+
+# Copiando o diretório build do cliente, se existir no contexto
+COPY client/build/ /app/client/build/
+
 # Expor porta
 EXPOSE 5000
 
