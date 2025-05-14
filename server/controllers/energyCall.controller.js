@@ -278,7 +278,42 @@ exports.publishEnergyCall = async (req, res) => {
 exports.closeEnergyCall = async (req, res) => {
   try {
     const { id } = req.params;
-    const { winningProposalId } = req.body;
+    
+    // First, log the entire request for debugging
+    console.log('Full close request:', {
+      params: req.params,
+      body: req.body,
+      user: req.user ? `ID: ${req.user.id}` : 'Not authenticated'
+    });
+    
+    // Make sure winningProposalId is properly parsed if it exists
+    let winningProposalId = null;
+    if (req.body.winningProposalId) {
+      try {
+        // Se for uma string numérica, converte para número
+        if (typeof req.body.winningProposalId === 'string' && /^\d+$/.test(req.body.winningProposalId)) {
+          winningProposalId = parseInt(req.body.winningProposalId, 10);
+          console.log(`Converted string winningProposalId to number: ${winningProposalId}`);
+        } 
+        // Se já for um número, usa diretamente
+        else if (typeof req.body.winningProposalId === 'number') {
+          winningProposalId = req.body.winningProposalId;
+          console.log(`Using numeric winningProposalId: ${winningProposalId}`);
+        }
+        // Se não conseguir converter, deixa como null
+        else {
+          console.log(`Invalid winningProposalId format: ${req.body.winningProposalId}, using null`);
+        }
+        
+        if (isNaN(winningProposalId)) {
+          winningProposalId = null;
+          console.log(`Warning: Could not parse winningProposalId "${req.body.winningProposalId}" as integer`);
+        }
+      } catch (e) {
+        console.error('Error parsing winningProposalId:', e);
+        winningProposalId = null;
+      }
+    }
     
     console.log(`Tentando fechar chamada ${id} com proposta vencedora ${winningProposalId || 'nenhuma'}`);
     console.log('Usuário da requisição:', req.user ? `ID: ${req.user.id}` : 'Não autenticado');
@@ -295,6 +330,8 @@ exports.closeEnergyCall = async (req, res) => {
       return res.status(404).json({ message: 'Chamada de energia não encontrada' });
     }
     
+    console.log(`Chamada encontrada: ID=${energyCall.id}, Status=${energyCall.status}`);
+    
     // Verificar se a chamada está aberta
     if (energyCall.status !== 'open') {
       return res.status(400).json({ 
@@ -306,51 +343,129 @@ exports.closeEnergyCall = async (req, res) => {
     const userId = req.user ? req.user.id : 1; // Usando ID 1 como fallback para testes
     console.log(`Usando userId: ${userId} para fechar a chamada`);
     
-    // Validar a proposta vencedora se fornecida
-    if (winningProposalId) {
-      console.log(`Validando proposta vencedora ID: ${winningProposalId}`);
-      console.log(`Propostas disponíveis:`, energyCall.Proposals.map(p => p.id));
+    // Check if Proposals is defined and an array
+    const hasProposals = energyCall.Proposals && Array.isArray(energyCall.Proposals) && energyCall.Proposals.length > 0;
+    console.log(`Chamada tem ${hasProposals ? energyCall.Proposals.length : 0} propostas`);
+    
+    if (hasProposals) {
+      // Log all proposal IDs for debugging
+      console.log('IDs de propostas disponíveis:', energyCall.Proposals.map(p => {
+        return {
+          id: p.id,
+          type: typeof p.id,
+          stringValue: String(p.id)
+        };
+      }));
+    }
+    
+    // Atualizar propostas se necessário
+    if (winningProposalId && hasProposals) {
+      console.log(`Validando proposta vencedora ID: ${winningProposalId} (${typeof winningProposalId})`);
       
-      const winningProposal = energyCall.Proposals.find(p => p.id === parseInt(winningProposalId));
+      // Verificar se a proposta vencedora existe na chamada - comparando com conversão de tipos
+      let winningProposal = null;
       
-      if (!winningProposal) {
-        return res.status(400).json({ 
-          message: 'Proposta vencedora não encontrada nesta chamada' 
-        });
+      for (const proposal of energyCall.Proposals) {
+        // Tenta diferentes formas de comparação para lidar com diferenças de tipo
+        const matchById = proposal.id === winningProposalId;
+        const matchByString = String(proposal.id) === String(winningProposalId);
+        
+        console.log(`Comparando proposta ${proposal.id} (${typeof proposal.id}) com winningProposalId ${winningProposalId} (${typeof winningProposalId})`);
+        console.log(`matchById: ${matchById}, matchByString: ${matchByString}`);
+        
+        if (matchById || matchByString) {
+          winningProposal = proposal;
+          break;
+        }
       }
       
-      // Atualizar o status da proposta vencedora
-      await winningProposal.update({ 
-        status: 'accepted',
-        responseDate: new Date(),
-        respondedBy: userId
-      });
-      
-      // Atualizar status das outras propostas
-      for (const proposal of energyCall.Proposals) {
-        if (proposal.id !== parseInt(winningProposalId)) {
-          await proposal.update({ 
-            status: 'rejected',
+      if (winningProposal) {
+        console.log(`Proposta vencedora encontrada: ID=${winningProposal.id}`);
+        
+        try {
+          // Atualizar o status da proposta vencedora
+          await winningProposal.update({ 
+            status: 'accepted',
             responseDate: new Date(),
             respondedBy: userId
           });
+          console.log(`Proposta ${winningProposal.id} atualizada como aceita`);
+          
+          // Atualizar status das outras propostas
+          for (const proposal of energyCall.Proposals) {
+            // Usando comparação com conversão de strings para ter certeza
+            if (String(proposal.id) !== String(winningProposalId)) {
+              await proposal.update({ 
+                status: 'rejected',
+                responseDate: new Date(),
+                respondedBy: userId
+              });
+              console.log(`Proposta ${proposal.id} atualizada como rejeitada`);
+            }
+          }
+        } catch (error) {
+          console.error(`Erro ao atualizar propostas:`, error);
+          // Continuar mesmo se houver erro com as propostas
         }
+      } else {
+        console.log(`AVISO: Proposta vencedora ID=${winningProposalId} não encontrada nesta chamada`);
+        // Não retornar erro, apenas logar o aviso e continuar
       }
+    } else {
+      console.log('Nenhuma proposta vencedora especificada ou chamada sem propostas');
     }
     
-    // Fechar a chamada
-    await energyCall.update({ 
-      status: 'closed',
-      closedBy: userId,
-      closedAt: new Date(),
-      winningProposalId: winningProposalId || null
-    });
-    
-    console.log(`Chamada ${id} fechada com sucesso`);
-    res.status(200).json({
-      message: 'Chamada de energia fechada com sucesso',
-      energyCall
-    });
+    try {
+      // Fechar a chamada
+      const updateData = { 
+        status: 'closed',
+        closedBy: userId,
+        closedAt: new Date(),
+        winningProposalId: winningProposalId || null
+      };
+      
+      console.log('Atualizando chamada com dados:', updateData);
+      await energyCall.update(updateData);
+      
+      console.log(`Chamada ${id} fechada com sucesso`);
+      
+      // Buscar a chamada atualizada com todas as informações
+      const updatedCall = await EnergyCall.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: 'creator',
+            attributes: ['id', 'name', 'email']
+          },
+          {
+            model: User,
+            as: 'closer',
+            attributes: ['id', 'name', 'email']
+          },
+          {
+            model: Proposal,
+            include: [
+              {
+                model: Counterpart,
+                attributes: ['id', 'companyName', 'cnpj', 'email']
+              }
+            ]
+          }
+        ]
+      });
+      
+      res.status(200).json({
+        message: 'Chamada de energia fechada com sucesso',
+        energyCall: updatedCall
+      });
+    } catch (error) {
+      console.error(`Erro ao atualizar chamada:`, error);
+      res.status(500).json({ 
+        message: 'Erro ao fechar chamada de energia', 
+        error: error.message,
+        stack: error.stack
+      });
+    }
   } catch (error) {
     console.error('Erro ao fechar chamada:', error);
     res.status(500).json({ 

@@ -1,77 +1,63 @@
-# EnergyCalls - Sistema de Gerenciamento de Chamadas de Energia
+# EnergyCalls - CELESC
 
-Um sistema web para gerenciamento de chamadas de energia da CELESC, facilitando a comunicação entre a empresa e seus fornecedores/contrapartes.
+Sistema de gerenciamento de chamadas de energia para a CELESC, permitindo o controle de propostas, contrapartes e negociações de energia.
 
-## Funcionalidades
+## Características
 
-- Cadastro e gerenciamento de chamadas de energia
+- Gestão de chamadas de energia (compra/venda)
 - Cadastro e homologação de contrapartes
-- Portal da contraparte para envio de propostas
-- Avaliação e seleção de propostas
-- Relatórios e estatísticas
-
-## Tecnologias
-
-### Backend
-- Node.js
-- Express.js
-- Sequelize ORM
-- PostgreSQL
-
-### Frontend
-- React.js
-- Material-UI
-- Axios
+- Sistema de propostas e negociações
+- Dashboard com estatísticas
+- Controle de acesso por diferentes perfis de usuário
+- Interface responsiva e moderna
 
 ## Estrutura do Projeto
 
-```
-energycalls/
-├── client/            # Aplicação React (frontend)
-├── server/            # Aplicação Node.js (backend)
-│   ├── config/        # Configurações
-│   ├── controllers/   # Controladores da API
-│   ├── middleware/    # Middleware personalizado
-│   ├── models/        # Modelos do Sequelize
-│   ├── routes/        # Rotas da API
-│   └── scripts/       # Scripts utilitários
-└── docs/              # Documentação
-```
+- `client/`: Frontend React com Material UI
+- `server/`: Backend Node.js com Express e Sequelize
+
+## Requisitos
+
+- Node.js 14+
+- Banco de dados PostgreSQL
+- npm ou yarn
 
 ## Instalação
 
-### Pré-requisitos
-- Node.js (v18+)
-- PostgreSQL
+### Cliente (Frontend)
 
-### Backend
-```bash
-cd server
-npm install
-npm run dev
-```
-
-### Frontend
 ```bash
 cd client
 npm install
 npm start
 ```
 
-## Uso
+### Servidor (Backend)
 
-1. Acesse o sistema como administrador em http://localhost:3000
-2. Cadastre e homologue contrapartes
-3. Crie chamadas de energia
-4. As contrapartes podem acessar o portal via http://localhost:3000/counterpart-login
+```bash
+cd server
+npm install
+npm start
+```
 
-## Portal da Contraparte
+## Desenvolvimento
 
-Para que uma contraparte possa acessar o sistema:
-1. Ela deve estar cadastrada e homologada no sistema
-2. Um administrador deve gerar um código de acesso para a contraparte
-3. A contraparte poderá fazer login usando seu CNPJ e o código de acesso gerado
+Para executar o ambiente de desenvolvimento:
+
+```bash
+# Frontend
+cd client
+npm run dev
+
+# Backend
+cd server
+npm run dev
+```
 
 ## Licença
 
-[MIT](LICENSE) 
+Este projeto é proprietário e confidencial.
+
+## Créditos
+
+Desenvolvido por CELESC - 2023 
