@@ -24,9 +24,9 @@ COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
 # Instalar dependências
-RUN npm ci --ignore-scripts && \
-    cd server && npm ci --only=production && cd .. && \
-    cd client && npm ci
+RUN npm install && \
+    cd server && npm install --only=production && cd .. && \
+    cd client && npm install
 
 # Copiar o restante do código fonte
 COPY . .
