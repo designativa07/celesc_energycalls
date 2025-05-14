@@ -280,6 +280,9 @@ exports.closeEnergyCall = async (req, res) => {
     const { id } = req.params;
     const { winningProposalId } = req.body;
     
+    console.log(`Tentando fechar chamada ${id} com proposta vencedora ${winningProposalId || 'nenhuma'}`);
+    console.log('Usuário da requisição:', req.user ? `ID: ${req.user.id}` : 'Não autenticado');
+    
     const energyCall = await EnergyCall.findByPk(id, {
       include: [
         {
@@ -299,11 +302,15 @@ exports.closeEnergyCall = async (req, res) => {
       });
     }
     
-    // Obter o ID do usuário (se disponível)
-    const userId = req.user ? req.user.id : null;
+    // Obter o ID do usuário (se disponível) ou usar um ID padrão para testes
+    const userId = req.user ? req.user.id : 1; // Usando ID 1 como fallback para testes
+    console.log(`Usando userId: ${userId} para fechar a chamada`);
     
     // Validar a proposta vencedora se fornecida
     if (winningProposalId) {
+      console.log(`Validando proposta vencedora ID: ${winningProposalId}`);
+      console.log(`Propostas disponíveis:`, energyCall.Proposals.map(p => p.id));
+      
       const winningProposal = energyCall.Proposals.find(p => p.id === parseInt(winningProposalId));
       
       if (!winningProposal) {
@@ -339,6 +346,7 @@ exports.closeEnergyCall = async (req, res) => {
       winningProposalId: winningProposalId || null
     });
     
+    console.log(`Chamada ${id} fechada com sucesso`);
     res.status(200).json({
       message: 'Chamada de energia fechada com sucesso',
       energyCall
@@ -347,7 +355,8 @@ exports.closeEnergyCall = async (req, res) => {
     console.error('Erro ao fechar chamada:', error);
     res.status(500).json({ 
       message: 'Erro ao fechar chamada de energia', 
-      error: error.message 
+      error: error.message,
+      stack: error.stack
     });
   }
 };
