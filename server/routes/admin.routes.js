@@ -16,37 +16,61 @@ router.get('/init-database', async (req, res) => {
     // Sincronizar modelos com o banco de dados
     await sequelize.sync({ force: false }); // use { force: true } para recriar as tabelas (CUIDADO: apaga dados)
     
-    // Verificar se já existe um usuário administrador
-    const adminExists = await User.findOne({ where: { role: 'admin' } });
+    // MODIFICAÇÃO: Remover usuário admin existente (se houver)
+    await User.destroy({ where: { role: 'admin' } });
     
-    if (!adminExists) {
-      // Criar usuário administrador padrão
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-      const admin = await User.create({
-        name: 'Administrador',
+    // Criar usuário administrador padrão
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const admin = await User.create({
+      name: 'Administrador',
+      email: 'admin@exemplo.com',
+      password: hashedPassword,
+      role: 'admin'
+    });
+    
+    res.status(200).json({ 
+      message: 'Banco de dados inicializado e usuário admin recriado com sucesso',
+      adminId: admin.id,
+      credentials: {
         email: 'admin@exemplo.com',
-        password: hashedPassword,
-        role: 'admin'
-      });
-      
-      res.status(200).json({ 
-        message: 'Banco de dados inicializado e usuário admin criado com sucesso',
-        adminId: admin.id,
-        credentials: {
-          email: 'admin@exemplo.com',
-          password: 'admin123'
-        }
-      });
-    } else {
-      res.status(200).json({ 
-        message: 'Banco de dados inicializado. Um usuário admin já existe.',
-        adminExists: true
-      });
-    }
+        password: 'admin123'
+      }
+    });
   } catch (error) {
     console.error('Erro ao inicializar banco de dados:', error);
     res.status(500).json({ 
       message: 'Erro ao inicializar banco de dados', 
+      error: error.message 
+    });
+  }
+});
+
+// Adicionar rota para redefinir senha do administrador
+router.get('/reset-admin-password', async (req, res) => {
+  try {
+    // Encontrar o primeiro usuário com papel de admin
+    const admin = await User.findOne({ where: { role: 'admin' } });
+    
+    if (!admin) {
+      return res.status(404).json({ message: 'Usuário administrador não encontrado' });
+    }
+    
+    // Redefinir a senha
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await admin.update({ password: hashedPassword });
+    
+    res.status(200).json({ 
+      message: 'Senha do administrador redefinida com sucesso',
+      adminId: admin.id,
+      credentials: {
+        email: admin.email,
+        password: 'admin123'
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao redefinir senha:', error);
+    res.status(500).json({ 
+      message: 'Erro ao redefinir senha', 
       error: error.message 
     });
   }
