@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { createContext, useState, useMemo, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Layout components
 import Layout from './components/Layout/Layout';
@@ -32,16 +33,10 @@ import CounterpartMyProposals from './pages/CounterpartPortal/MyProposals';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CounterpartAuthProvider, useCounterpartAuth } from './contexts/CounterpartAuthContext';
 
-// Create theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-  },
+// Create ColorMode context
+export const ColorModeContext = createContext({ 
+  toggleColorMode: () => {},
+  mode: 'light'
 });
 
 // Protected route component for internal users
@@ -75,67 +70,144 @@ const ProtectedCounterpartRoute = ({ children }) => {
 };
 
 function App() {
+  // Use prefers-color-scheme media query to detect system preference
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  // Try to get saved mode from localStorage or use system preference
+  const [mode, setMode] = useState(() => {
+    const savedMode = localStorage.getItem('colorMode');
+    return savedMode || (prefersDarkMode ? 'dark' : 'light');
+  });
+
+  // Update localStorage when mode changes
+  useEffect(() => {
+    localStorage.setItem('colorMode', mode);
+  }, [mode]);
+
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+      mode,
+    }),
+    [mode],
+  );
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+          primary: {
+            main: mode === 'light' ? '#1976d2' : '#90caf9',
+          },
+          secondary: {
+            main: mode === 'light' ? '#f50057' : '#f48fb1',
+          },
+          background: {
+            default: mode === 'light' ? '#f5f5f5' : '#121212',
+            paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
+          },
+        },
+        typography: {
+          fontFamily: [
+            'Poppins',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif'
+          ].join(','),
+        },
+        shape: {
+          borderRadius: 8,
+        },
+        components: {
+          MuiButton: {
+            styleOverrides: {
+              root: {
+                textTransform: 'none',
+                fontWeight: 500,
+              },
+            },
+          },
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                boxShadow: mode === 'light' 
+                  ? '0px 4px 20px rgba(0, 0, 0, 0.05)' 
+                  : '0px 4px 20px rgba(0, 0, 0, 0.2)',
+                borderRadius: 12,
+              },
+            },
+          },
+        },
+      }),
+    [mode],
+  );
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <CounterpartAuthProvider>
-        <AuthProvider>
-          <Router>
-            <Routes>
-              {/* Admin/Internal Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              <Route 
-                path="/" 
-                element={
-                  <ProtectedRoute>
-                    <Layout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Dashboard />} />
-                <Route path="calls">
-                  <Route index element={<CallsList />} />
-                  <Route path="create" element={<CallCreate />} />
-                  <Route path=":id" element={<CallDetail />} />
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <CounterpartAuthProvider>
+          <AuthProvider>
+            <Router>
+              <Routes>
+                {/* Admin/Internal Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                <Route 
+                  path="/" 
+                  element={
+                    <ProtectedRoute>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Dashboard />} />
+                  <Route path="calls">
+                    <Route index element={<CallsList />} />
+                    <Route path="create" element={<CallCreate />} />
+                    <Route path=":id" element={<CallDetail />} />
+                  </Route>
+                  <Route path="counterparts">
+                    <Route index element={<CounterpartsList />} />
+                    <Route path="create" element={<CounterpartCreate />} />
+                    <Route path=":id" element={<CounterpartDetail />} />
+                  </Route>
+                  <Route path="users">
+                    <Route index element={<UsersList />} />
+                    <Route path="edit/:id" element={<UserEdit />} />
+                  </Route>
                 </Route>
-                <Route path="counterparts">
-                  <Route index element={<CounterpartsList />} />
-                  <Route path="create" element={<CounterpartCreate />} />
-                  <Route path=":id" element={<CounterpartDetail />} />
+                
+                {/* Counterpart Portal Routes */}
+                <Route path="/counterpart-login" element={<CounterpartLogin />} />
+                
+                <Route 
+                  path="/counterpart-portal" 
+                  element={
+                    <ProtectedCounterpartRoute>
+                      <CounterpartPortalLayout />
+                    </ProtectedCounterpartRoute>
+                  }
+                >
+                  <Route index element={<CounterpartDashboard />} />
+                  <Route path="calls">
+                    <Route index element={<CounterpartCallsList />} />
+                    <Route path=":id" element={<CounterpartCallDetail />} />
+                  </Route>
+                  <Route path="my-proposals" element={<CounterpartMyProposals />} />
                 </Route>
-                <Route path="users">
-                  <Route index element={<UsersList />} />
-                  <Route path="edit/:id" element={<UserEdit />} />
-                </Route>
-              </Route>
-              
-              {/* Counterpart Portal Routes */}
-              <Route path="/counterpart-login" element={<CounterpartLogin />} />
-              
-              <Route 
-                path="/counterpart-portal" 
-                element={
-                  <ProtectedCounterpartRoute>
-                    <CounterpartPortalLayout />
-                  </ProtectedCounterpartRoute>
-                }
-              >
-                <Route index element={<CounterpartDashboard />} />
-                <Route path="calls">
-                  <Route index element={<CounterpartCallsList />} />
-                  <Route path=":id" element={<CounterpartCallDetail />} />
-                </Route>
-                <Route path="my-proposals" element={<CounterpartMyProposals />} />
-              </Route>
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Router>
-        </AuthProvider>
-      </CounterpartAuthProvider>
-    </ThemeProvider>
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Router>
+          </AuthProvider>
+        </CounterpartAuthProvider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
