@@ -76,4 +76,39 @@ router.get('/reset-admin-password', async (req, res) => {
   }
 });
 
+// Adicionar rota para criar usuário admin com credenciais específicas
+router.get('/create-specific-admin', async (req, res) => {
+  try {
+    // Verificar se as tabelas existem (sincroniza sem destruir dados)
+    await sequelize.sync({ force: false });
+    
+    // MODIFICAÇÃO: Remover usuário admin existente (se houver)
+    await User.destroy({ where: { email: 'admin@celesc.com.br' } });
+    
+    // Criar usuário administrador com credenciais específicas
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const admin = await User.create({
+      name: 'Administrador CELESC',
+      email: 'admin@celesc.com.br',
+      password: hashedPassword,
+      role: 'admin'
+    });
+    
+    res.status(200).json({ 
+      message: 'Usuário admin criado com sucesso',
+      adminId: admin.id,
+      credentials: {
+        email: 'admin@celesc.com.br',
+        password: 'admin123'
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao criar usuário admin:', error);
+    res.status(500).json({ 
+      message: 'Erro ao criar usuário admin', 
+      error: error.message 
+    });
+  }
+});
+
 module.exports = router; 
