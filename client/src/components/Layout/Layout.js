@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import {
@@ -90,11 +90,6 @@ const Layout = () => {
   console.log('Usuário logado:', user);
   console.log('Role do usuário:', user?.role);
   
-  // Forçar atualização dos dados do usuário no carregamento
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -121,14 +116,12 @@ const Layout = () => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Chamadas de Energia', icon: <EnergyIcon />, path: '/calls' },
     { text: 'Contrapartes', icon: <CompanyIcon />, path: '/counterparts' },
-    // Temporariamente adicionando o menu de usuários para todos os usuários para fins de teste
-    { text: 'Usuários', icon: <PeopleIcon />, path: '/users' },
   ];
 
-  // Comentando temporariamente esta condição para o debug
-  // if (user && user.role === 'admin') {
-  //   menuItems.push({ text: 'Usuários', icon: <PeopleIcon />, path: '/users' });
-  // }
+  // Adicionar menu de usuários apenas se for admin
+  if (user?.role === 'admin') {
+    menuItems.push({ text: 'Usuários', icon: <PeopleIcon />, path: '/users' });
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
