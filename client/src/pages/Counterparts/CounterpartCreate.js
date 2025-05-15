@@ -103,31 +103,41 @@ const CounterpartCreate = () => {
   };
   
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+    <Box sx={{ width: '100%', px: { xs: 2, sm: 3 } }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 600 }}>
           Nova Contraparte
         </Typography>
       </Box>
       
       {error && (
-        <Alert severity="error" sx={{ mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 3, fontSize: '0.9rem' }}>
           {error}
         </Alert>
       )}
       
       {success && (
-        <Alert severity="success" sx={{ mb: 4 }}>
+        <Alert severity="success" sx={{ mb: 3, fontSize: '0.9rem' }}>
           Contraparte criada com sucesso! Redirecionando...
         </Alert>
       )}
       
-      <Paper sx={{ p: { xs: 3, md: 4 }, borderRadius: 2, boxShadow: (theme) => theme.palette.mode === 'light' ? '0 4px 20px 0 rgba(0,0,0,0.05)' : '0 4px 20px 0 rgba(0,0,0,0.2)' }}>
+      <Paper 
+        elevation={2}
+        sx={{ 
+          p: { xs: 2, sm: 3 }, 
+          borderRadius: 2,
+          boxShadow: (theme) => theme.palette.mode === 'light' 
+            ? '0 2px 10px 0 rgba(0,0,0,0.05)' 
+            : '0 2px 10px 0 rgba(0,0,0,0.2)'
+        }}
+      >
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                size="small"
                 label="Nome da Empresa"
                 name="companyName"
                 value={formData.companyName}
@@ -135,14 +145,18 @@ const CounterpartCreate = () => {
                 required
                 disabled={loading || success}
                 variant="outlined"
-                margin="normal"
-                sx={{ mb: 3 }}
+                margin="dense"
+                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                size="small"
                 label="CNPJ"
                 name="cnpj"
                 value={formData.cnpj}
@@ -152,28 +166,36 @@ const CounterpartCreate = () => {
                 helperText="Digite apenas os números, sem pontuação"
                 disabled={loading || success}
                 variant="outlined"
-                margin="normal"
-                sx={{ mb: 3 }}
+                margin="dense"
+                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                size="small"
                 label="Nome do Contato"
                 name="contactName"
                 value={formData.contactName}
                 onChange={handleChange}
                 disabled={loading || success}
                 variant="outlined"
-                margin="normal"
-                sx={{ mb: 3 }}
+                margin="dense"
+                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                size="small"
                 label="Email"
                 name="email"
                 type="email"
@@ -181,27 +203,34 @@ const CounterpartCreate = () => {
                 onChange={handleChange}
                 disabled={loading || success}
                 variant="outlined"
-                margin="normal"
-                sx={{ mb: 3 }}
+                margin="dense"
+                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                size="small"
                 label="Telefone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 disabled={loading || success}
                 variant="outlined"
-                margin="normal"
-                sx={{ mb: 3 }}
+                margin="dense"
+                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={6}>
-              <Box sx={{ pt: 2, mt: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <Box sx={{ pt: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -210,10 +239,10 @@ const CounterpartCreate = () => {
                       onChange={handleChange}
                       disabled={loading || success}
                       color="primary"
+                      size="small"
                     />
                   }
-                  label="Ativa"
-                  sx={{ ml: 1 }}
+                  label={<Typography variant="body2">Ativa</Typography>}
                 />
               </Box>
             </Grid>
@@ -221,16 +250,20 @@ const CounterpartCreate = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                size="small"
                 label="Observações"
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
                 multiline
-                rows={4}
+                rows={3}
                 disabled={loading || success}
                 variant="outlined"
-                margin="normal"
-                sx={{ mb: 4 }}
+                margin="dense"
+                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             
@@ -239,7 +272,7 @@ const CounterpartCreate = () => {
                 display: 'flex', 
                 gap: 2, 
                 justifyContent: 'flex-end',
-                mt: 2,
+                mt: 1,
                 pt: 2,
                 borderTop: 1,
                 borderColor: 'divider'
@@ -247,11 +280,10 @@ const CounterpartCreate = () => {
                 <Button 
                   type="button" 
                   variant="outlined"
-                  size="large"
+                  size="medium"
                   startIcon={<CancelIcon />}
                   onClick={() => navigate('/counterparts')}
                   disabled={loading || success}
-                  sx={{ px: 3 }}
                 >
                   Cancelar
                 </Button>
@@ -259,10 +291,9 @@ const CounterpartCreate = () => {
                   type="submit" 
                   variant="contained" 
                   color="primary"
-                  size="large"
-                  startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+                  size="medium"
+                  startIcon={loading ? <CircularProgress size={16} /> : <SaveIcon />}
                   disabled={loading || success}
-                  sx={{ px: 3 }}
                 >
                   Salvar
                 </Button>
@@ -271,7 +302,7 @@ const CounterpartCreate = () => {
           </Grid>
         </form>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

@@ -14,6 +14,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 14px;
 }
 
 code {
@@ -28,7 +29,7 @@ code {
 
 /* Estilos para scrollbar personalizada */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -46,82 +47,192 @@ code {
 
 /* Espaçamentos entre elementos de formulário */
 .MuiFormControl-root + .MuiFormControl-root {
-  margin-top: 24px;
-}
-
-.MuiTextField-root + .MuiTextField-root {
   margin-top: 16px;
 }
 
+.MuiTextField-root + .MuiTextField-root {
+  margin-top: 12px;
+}
+
 .MuiGrid-item {
-  padding: 12px !important;
+  padding: 8px !important;
 }
 
 /* Espaço entre botões adjacentes */
 .MuiButton-root + .MuiButton-root {
-  margin-left: 16px;
+  margin-left: 12px;
 }
 
 /* Espaço maior para seções de conteúdo */
 section, .content-section {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 /* Espaçamento vertical em listas */
 .MuiList-root .MuiListItem-root {
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 /* Espaços entre elementos de formulário em linha */
 .form-row {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 -12px;
+  margin: 0 -8px;
 }
 
 .form-row > * {
-  padding: 0 12px;
-  margin-bottom: 24px;
+  padding: 0 8px;
+  margin-bottom: 16px;
 }
 
 /* Espaçamento para grupos de formulário */
 .form-group {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 /* Espaços em tabelas */
 .MuiTableContainer-root {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 /* Ajustes para campos em formulários */
 label + .MuiInput-root,
 label + .MuiOutlinedInput-root,
 label + .MuiFilledInput-root {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 /* Ajustes para cabeçalhos de seção */
 .section-title {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 /* Espaçamento para cards */
 .MuiCard-root {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 /* Espaçamento interno para contêineres */
 .container-padding {
-  padding: 24px;
+  padding: 16px;
 }
 
 /* Espaçamento para ícones em botões */
 .MuiButton-startIcon {
-  margin-right: 8px;
+  margin-right: 6px;
 }
 
 .MuiButton-endIcon {
-  margin-left: 8px;
+  margin-left: 6px;
+}
+
+/* Ajustes nos tamanhos de texto */
+h1, .MuiTypography-h1 {
+  font-size: 2rem !important;
+}
+
+h2, .MuiTypography-h2 {
+  font-size: 1.75rem !important;
+}
+
+h3, .MuiTypography-h3 {
+  font-size: 1.5rem !important;
+}
+
+h4, .MuiTypography-h4 {
+  font-size: 1.3rem !important;
+}
+
+h5, .MuiTypography-h5 {
+  font-size: 1.1rem !important;
+}
+
+h6, .MuiTypography-h6 {
+  font-size: 1rem !important;
+}
+
+p, .MuiTypography-body1 {
+  font-size: 0.95rem !important;
+}
+
+.MuiTypography-body2 {
+  font-size: 0.875rem !important;
+}
+
+/* Reduzir tamanho de campos de formulário */
+.MuiOutlinedInput-input.MuiInputBase-input {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+}
+
+.MuiInputLabel-root {
+  font-size: 0.95rem !important;
+}
+
+.MuiFormHelperText-root {
+  font-size: 0.8rem !important;
+  margin-top: 2px !important;
+}
+
+/* Ajustes específicos para contêineres de página */
+.MuiContainer-root {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+@media (min-width: 600px) {
+  .MuiContainer-root {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Reduzir margens e padding em Paper */
+.MuiPaper-root {
+  padding: 12px !important;
+}
+
+@media (min-width: 600px) {
+  .MuiPaper-root {
+    padding: 16px !important;
+  }
+}
+
+/* Ajuste na altura da barra de navegação */
+.MuiToolbar-root {
+  min-height: 56px !important;
+}
+
+/* Ajuste no espaçamento das tabelas */
+.MuiTableCell-root {
+  padding: 10px 12px !important;
+  font-size: 0.9rem !important;
+}
+
+/* Ajuste nos botões */
+.MuiButton-root {
+  font-size: 0.9rem !important;
+}
+
+/* Reduzir tamanho de texto em chips */
+.MuiChip-label {
+  font-size: 0.8rem !important;
+}
+
+/* Ajustar densidade dos inputs */
+.MuiInputBase-root.MuiOutlinedInput-root {
+  padding: 0;
+}
+
+/* Melhorar o espaçamento para formulários densos */
+.MuiFormControl-root {
+  margin-bottom: 12px !important;
+}
+
+.MuiFormControl-marginDense {
+  margin-top: 6px !important;
+  margin-bottom: 6px !important;
 }

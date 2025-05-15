@@ -39,21 +39,24 @@ import {
 import { useCounterpartAuth } from '../../contexts/CounterpartAuthContext';
 import { ColorModeContext } from '../../App';
 
-const drawerWidth = 260;
+const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 2),
+  padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
   justifyContent: 'space-between',
   backgroundColor: theme.palette.primary.main,
-  color: '#fff'
+  color: '#fff',
+  minHeight: '56px'
 }));
 
 const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
-  margin: theme.spacing(0.5, 1),
+  margin: theme.spacing(0.5, 0.5),
   borderRadius: theme.shape.borderRadius,
+  fontSize: '0.9rem',
+  padding: '6px 12px',
   '&.Mui-selected': {
     backgroundColor: theme.palette.mode === 'light' 
       ? 'rgba(25, 118, 210, 0.1)' 
@@ -376,9 +379,9 @@ const CounterpartPortalLayout = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          pt: 8,
-          px: { xs: 2, sm: 3, md: 4 },
-          pb: 4,
+          pt: 7,
+          px: { xs: 1.5, sm: 2, md: 3 },
+          pb: 3,
           width: { sm: `calc(100% - ${drawerOpen ? drawerWidth : 0}px)` },
           ml: { sm: drawerOpen ? `${drawerWidth}px` : 0 },
           transition: (theme) => theme.transitions.create(['margin', 'width'], {
@@ -393,11 +396,11 @@ const CounterpartPortalLayout = () => {
               ? 'rgba(255,255,255,0.7)' 
               : 'rgba(30,30,30,0.7)',
             backdropFilter: 'blur(20px)',
-            borderRadius: 3,
-            p: { xs: 2, sm: 3 },
+            borderRadius: 2,
+            p: { xs: 1.5, sm: 2 },
             boxShadow: theme.palette.mode === 'light'
-              ? '0 4px 24px rgba(0,0,0,0.05)'
-              : '0 4px 24px rgba(0,0,0,0.2)',
+              ? '0 2px 12px rgba(0,0,0,0.05)'
+              : '0 2px 12px rgba(0,0,0,0.2)',
           }}
         >
           <Outlet />

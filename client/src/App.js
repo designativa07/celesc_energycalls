@@ -117,6 +117,42 @@ function App() {
             'Arial',
             'sans-serif'
           ].join(','),
+          fontSize: 14,
+          h1: {
+            fontSize: '2.2rem',
+            fontWeight: 600,
+          },
+          h2: {
+            fontSize: '1.8rem',
+            fontWeight: 600,
+          },
+          h3: {
+            fontSize: '1.5rem',
+            fontWeight: 600,
+          },
+          h4: {
+            fontSize: '1.3rem',
+            fontWeight: 600,
+          },
+          h5: {
+            fontSize: '1.1rem',
+            fontWeight: 600,
+          },
+          h6: {
+            fontSize: '1rem',
+            fontWeight: 600,
+          },
+          body1: {
+            fontSize: '0.95rem',
+          },
+          body2: {
+            fontSize: '0.875rem',
+          },
+          button: {
+            textTransform: 'none',
+            fontWeight: 500,
+            fontSize: '0.9rem',
+          },
         },
         shape: {
           borderRadius: 8,
@@ -128,6 +164,15 @@ function App() {
               root: {
                 textTransform: 'none',
                 fontWeight: 500,
+                padding: '6px 16px',
+              },
+              sizeSmall: {
+                padding: '4px 12px',
+                fontSize: '0.8rem',
+              },
+              sizeLarge: {
+                padding: '8px 22px',
+                fontSize: '1rem',
               },
             },
           },
@@ -155,14 +200,20 @@ function App() {
           MuiTextField: {
             styleOverrides: {
               root: {
-                marginBottom: '24px',
+                marginBottom: '16px',
+                '& .MuiInputBase-input': {
+                  fontSize: '0.95rem',
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '0.95rem',
+                }
               },
             },
           },
           MuiFormControl: {
             styleOverrides: {
               root: {
-                marginBottom: '24px',
+                marginBottom: '16px',
                 width: '100%',
               },
             },
@@ -170,53 +221,110 @@ function App() {
           MuiInputLabel: {
             styleOverrides: {
               root: {
-                marginBottom: '8px',
+                marginBottom: '6px',
+                fontSize: '0.95rem',
               },
             },
           },
           MuiSelect: {
             styleOverrides: {
               root: {
-                marginBottom: '24px',
+                marginBottom: '16px',
+                fontSize: '0.95rem',
               },
             },
           },
           MuiFormGroup: {
             styleOverrides: {
               root: {
-                marginBottom: '24px',
+                marginBottom: '16px',
               },
             },
           },
           MuiTableCell: {
             styleOverrides: {
               root: {
-                padding: '16px',
+                padding: '12px 16px',
+                fontSize: '0.9rem',
               },
               head: {
                 fontWeight: 600,
+                fontSize: '0.9rem',
               },
             },
           },
           MuiDialogContent: {
             styleOverrides: {
               root: {
-                padding: '24px',
+                padding: '16px 24px',
               },
             },
           },
           MuiListItem: {
             styleOverrides: {
               root: {
-                paddingTop: '8px',
-                paddingBottom: '8px',
+                paddingTop: '6px',
+                paddingBottom: '6px',
+              },
+            },
+          },
+          MuiListItemText: {
+            styleOverrides: {
+              primary: {
+                fontSize: '0.95rem',
+              },
+              secondary: {
+                fontSize: '0.85rem',
               },
             },
           },
           MuiDivider: {
             styleOverrides: {
               root: {
-                margin: '16px 0',
+                margin: '12px 0',
+              },
+            },
+          },
+          MuiContainer: {
+            styleOverrides: {
+              root: {
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                '@media (min-width:600px)': {
+                  paddingLeft: '24px',
+                  paddingRight: '24px',
+                },
+              },
+            },
+          },
+          MuiOutlinedInput: {
+            styleOverrides: {
+              root: {
+                fontSize: '0.95rem',
+              },
+            },
+          },
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                padding: '16px',
+              },
+            },
+          },
+          MuiAppBar: {
+            styleOverrides: {
+              root: {
+                padding: '0',
+              },
+            },
+          },
+          MuiToolbar: {
+            styleOverrides: {
+              root: {
+                minHeight: '56px',
+                '@media (min-width:600px)': {
+                  minHeight: '56px',
+                },
               },
             },
           },
