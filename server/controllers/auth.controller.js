@@ -39,44 +39,55 @@ exports.register = async (req, res) => {
 // Login de usuário
 exports.login = async (req, res) => {
   try {
+    console.log('Login attempt with:', { email: req.body.email });
+    
     const { email, password } = req.body;
     
-    // Buscar o usuário pelo e-mail
+    if (!email || !password) {
+      console.log('Login failed: missing email or password');
+      return res.status(400).json({ message: 'Email e senha são obrigatórios' });
+    }
+    
     const user = await User.findOne({ where: { email } });
     
     if (!user) {
+      console.log('Login failed: user not found');
       return res.status(401).json({ message: 'Credenciais inválidas' });
     }
     
-    // Verificar se o usuário está ativo
-    if (!user.active) {
-      return res.status(403).json({ message: 'Usuário desativado. Entre em contato com o administrador.' });
-    }
+    console.log('User found:', { id: user.id, role: user.role });
     
     // Verificar a senha
-    const isPasswordValid = await user.checkPassword(password);
+    const validPassword = await user.checkPassword(password);
+    console.log('Password validation result:', validPassword);
     
-    if (!isPasswordValid) {
+    if (!validPassword) {
+      console.log('Login failed: invalid password');
       return res.status(401).json({ message: 'Credenciais inválidas' });
     }
     
     // Gerar token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, role: user.role },
       config.security.jwtSecret,
       { expiresIn: config.security.jwtExpiresIn }
     );
     
-    // Retornar os dados do usuário sem a senha
-    const userData = { ...user.get() };
-    delete userData.password;
+    console.log('Login successful for user ID:', user.id);
     
+    // Se chegou até aqui, autenticação foi bem-sucedida
     res.status(200).json({
       message: 'Login realizado com sucesso',
       token,
-      user: userData
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Erro ao realizar login', error: error.message });
   }
 };
