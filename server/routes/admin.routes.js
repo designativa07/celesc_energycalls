@@ -111,4 +111,41 @@ router.get('/create-specific-admin', async (req, res) => {
   }
 });
 
+// Adicionar rota para forçar a atualização da senha do administrador diretamente no banco
+router.get('/force-update-admin-password', async (req, res) => {
+  try {
+    // Encontrar o usuário administrador
+    const admin = await User.findOne({ where: { email: 'admin@celesc.com.br' } });
+    
+    if (!admin) {
+      return res.status(404).json({ message: 'Usuário administrador não encontrado' });
+    }
+    
+    // Gerar hash diretamente com bcrypt
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    
+    // Atualizar diretamente no banco de dados para evitar hooks do Sequelize
+    await sequelize.query(
+      'UPDATE "Users" SET "password" = ? WHERE "id" = ?',
+      {
+        replacements: [hashedPassword, admin.id],
+        type: sequelize.QueryTypes.UPDATE
+      }
+    );
+    
+    res.status(200).json({ 
+      message: 'Senha do administrador atualizada com sucesso',
+      adminId: admin.id,
+      email: admin.email,
+      passwordUpdated: true
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar senha:', error);
+    res.status(500).json({ 
+      message: 'Erro ao atualizar senha', 
+      error: error.message 
+    });
+  }
+});
+
 module.exports = router; 
