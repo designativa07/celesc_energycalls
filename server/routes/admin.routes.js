@@ -23,7 +23,7 @@ router.get('/init-database', async (req, res) => {
     const hashedPassword = await bcrypt.hash('admin123', 10);
     const admin = await User.create({
       name: 'Administrador',
-      email: 'admin@exemplo.com',
+      email: 'admin@celesc.com.br',
       password: hashedPassword,
       role: 'admin'
     });
@@ -32,7 +32,7 @@ router.get('/init-database', async (req, res) => {
       message: 'Banco de dados inicializado e usuário admin recriado com sucesso',
       adminId: admin.id,
       credentials: {
-        email: 'admin@exemplo.com',
+        email: 'admin@celesc.com.br',
         password: 'admin123'
       }
     });

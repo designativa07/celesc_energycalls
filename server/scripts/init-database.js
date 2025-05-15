@@ -16,14 +16,14 @@ async function initDatabase() {
     const hashedPassword = await bcrypt.hash('admin123', 10);
     const admin = await User.create({
       name: 'Administrador',
-      email: 'admin@exemplo.com',
+      email: 'admin@celesc.com.br',
       password: hashedPassword,
       role: 'admin'
     });
     
     console.log(`Usuário administrador criado com sucesso! ID: ${admin.id}`);
     console.log('Credenciais iniciais:');
-    console.log('Email: admin@exemplo.com');
+    console.log('Email: admin@celesc.com.br');
     console.log('Senha: admin123');
     
     process.exit(0);
