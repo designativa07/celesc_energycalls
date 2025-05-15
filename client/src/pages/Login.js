@@ -30,6 +30,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     
     // Validações básicas
     if (!email || !password) {
@@ -38,9 +39,12 @@ const Login = () => {
     }
     
     try {
-      await login(email, password);
+      const data = await login(email, password);
+      console.log('Login bem-sucedido, dados do usuário:', data.user);
+      console.log('Role do usuário após login:', data.user?.role);
       navigate('/');
     } catch (error) {
+      console.error('Erro no login:', error);
       setError(error.message);
     }
   };

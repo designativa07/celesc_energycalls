@@ -86,6 +86,10 @@ const Layout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Debug: console log para verificar a role do usuário
+  console.log('Usuário logado:', user);
+  console.log('Role do usuário:', user?.role);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -112,11 +116,14 @@ const Layout = () => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Chamadas de Energia', icon: <EnergyIcon />, path: '/calls' },
     { text: 'Contrapartes', icon: <CompanyIcon />, path: '/counterparts' },
+    // Temporariamente adicionando o menu de usuários para todos os usuários para fins de teste
+    { text: 'Usuários', icon: <PeopleIcon />, path: '/users' },
   ];
 
-  if (user && user.role === 'admin') {
-    menuItems.push({ text: 'Usuários', icon: <PeopleIcon />, path: '/users' });
-  }
+  // Comentando temporariamente esta condição para o debug
+  // if (user && user.role === 'admin') {
+  //   menuItems.push({ text: 'Usuários', icon: <PeopleIcon />, path: '/users' });
+  // }
 
   return (
     <Box sx={{ display: 'flex' }}>

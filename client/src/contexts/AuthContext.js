@@ -99,6 +99,38 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   };
   
+  // Função getCurrentUser para verificar autenticação atual
+  const getCurrentUser = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setUser(null);
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+      
+      const response = await api.get('/auth/me');
+      console.log('Dados do usuário recebidos:', response.data);
+      
+      const userData = response.data.user;
+      console.log('User data:', userData);
+      console.log('Role do usuário:', userData?.role);
+      
+      setUser(userData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Erro ao buscar usuário atual:', error);
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('token');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const value = {
     user,
     isAuthenticated,
@@ -107,7 +139,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    clearError
+    clearError,
+    getCurrentUser
   };
   
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
