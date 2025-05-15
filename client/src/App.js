@@ -121,6 +121,7 @@ function App() {
         shape: {
           borderRadius: 8,
         },
+        spacing: 8, // Base spacing unit
         components: {
           MuiButton: {
             styleOverrides: {
@@ -137,6 +138,85 @@ function App() {
                   ? '0px 4px 20px rgba(0, 0, 0, 0.05)' 
                   : '0px 4px 20px rgba(0, 0, 0, 0.2)',
                 borderRadius: 12,
+                padding: '16px',
+              },
+            },
+          },
+          MuiCardContent: {
+            styleOverrides: {
+              root: {
+                padding: '16px',
+                '&:last-child': {
+                  paddingBottom: '16px',
+                },
+              },
+            },
+          },
+          MuiTextField: {
+            styleOverrides: {
+              root: {
+                marginBottom: '24px',
+              },
+            },
+          },
+          MuiFormControl: {
+            styleOverrides: {
+              root: {
+                marginBottom: '24px',
+                width: '100%',
+              },
+            },
+          },
+          MuiInputLabel: {
+            styleOverrides: {
+              root: {
+                marginBottom: '8px',
+              },
+            },
+          },
+          MuiSelect: {
+            styleOverrides: {
+              root: {
+                marginBottom: '24px',
+              },
+            },
+          },
+          MuiFormGroup: {
+            styleOverrides: {
+              root: {
+                marginBottom: '24px',
+              },
+            },
+          },
+          MuiTableCell: {
+            styleOverrides: {
+              root: {
+                padding: '16px',
+              },
+              head: {
+                fontWeight: 600,
+              },
+            },
+          },
+          MuiDialogContent: {
+            styleOverrides: {
+              root: {
+                padding: '24px',
+              },
+            },
+          },
+          MuiListItem: {
+            styleOverrides: {
+              root: {
+                paddingTop: '8px',
+                paddingBottom: '8px',
+              },
+            },
+          },
+          MuiDivider: {
+            styleOverrides: {
+              root: {
+                margin: '16px 0',
               },
             },
           },

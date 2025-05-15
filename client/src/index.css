@@ -43,3 +43,85 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(128, 128, 128, 0.8);
 }
+
+/* Espaçamentos entre elementos de formulário */
+.MuiFormControl-root + .MuiFormControl-root {
+  margin-top: 24px;
+}
+
+.MuiTextField-root + .MuiTextField-root {
+  margin-top: 16px;
+}
+
+.MuiGrid-item {
+  padding: 12px !important;
+}
+
+/* Espaço entre botões adjacentes */
+.MuiButton-root + .MuiButton-root {
+  margin-left: 16px;
+}
+
+/* Espaço maior para seções de conteúdo */
+section, .content-section {
+  margin-bottom: 32px;
+}
+
+/* Espaçamento vertical em listas */
+.MuiList-root .MuiListItem-root {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Espaços entre elementos de formulário em linha */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px;
+}
+
+.form-row > * {
+  padding: 0 12px;
+  margin-bottom: 24px;
+}
+
+/* Espaçamento para grupos de formulário */
+.form-group {
+  margin-bottom: 32px;
+}
+
+/* Espaços em tabelas */
+.MuiTableContainer-root {
+  margin-bottom: 32px;
+}
+
+/* Ajustes para campos em formulários */
+label + .MuiInput-root,
+label + .MuiOutlinedInput-root,
+label + .MuiFilledInput-root {
+  margin-top: 8px;
+}
+
+/* Ajustes para cabeçalhos de seção */
+.section-title {
+  margin-bottom: 24px;
+}
+
+/* Espaçamento para cards */
+.MuiCard-root {
+  margin-bottom: 24px;
+}
+
+/* Espaçamento interno para contêineres */
+.container-padding {
+  padding: 24px;
+}
+
+/* Espaçamento para ícones em botões */
+.MuiButton-startIcon {
+  margin-right: 8px;
+}
+
+.MuiButton-endIcon {
+  margin-left: 8px;
+}
