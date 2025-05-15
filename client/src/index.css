@@ -15,6 +15,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s ease, color 0.3s ease;
   font-size: 14px;
+  line-height: 1.5;
+  background-color: #f5f5f5;
 }
 
 code {
@@ -47,11 +49,11 @@ code {
 
 /* Espaçamentos entre elementos de formulário */
 .MuiFormControl-root + .MuiFormControl-root {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .MuiTextField-root + .MuiTextField-root {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .MuiGrid-item {
@@ -60,18 +62,18 @@ code {
 
 /* Espaço entre botões adjacentes */
 .MuiButton-root + .MuiButton-root {
-  margin-left: 12px;
+  margin-left: 8px;
 }
 
 /* Espaço maior para seções de conteúdo */
 section, .content-section {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 /* Espaçamento vertical em listas */
 .MuiList-root .MuiListItem-root {
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 /* Espaços entre elementos de formulário em linha */
@@ -83,41 +85,41 @@ section, .content-section {
 
 .form-row > * {
   padding: 0 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* Espaçamento para grupos de formulário */
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 /* Espaços em tabelas */
 .MuiTableContainer-root {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 /* Ajustes para campos em formulários */
 label + .MuiInput-root,
 label + .MuiOutlinedInput-root,
 label + .MuiFilledInput-root {
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 /* Ajustes para cabeçalhos de seção */
 .section-title {
-  margin-bottom: 16px;
-  font-size: 1.2rem;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
 /* Espaçamento para cards */
 .MuiCard-root {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* Espaçamento interno para contêineres */
 .container-padding {
-  padding: 16px;
+  padding: 12px;
 }
 
 /* Espaçamento para ícones em botões */
@@ -131,49 +133,49 @@ label + .MuiFilledInput-root {
 
 /* Ajustes nos tamanhos de texto */
 h1, .MuiTypography-h1 {
-  font-size: 2rem !important;
+  font-size: 1.8rem !important;
 }
 
 h2, .MuiTypography-h2 {
-  font-size: 1.75rem !important;
+  font-size: 1.6rem !important;
 }
 
 h3, .MuiTypography-h3 {
-  font-size: 1.5rem !important;
+  font-size: 1.4rem !important;
 }
 
 h4, .MuiTypography-h4 {
-  font-size: 1.3rem !important;
+  font-size: 1.2rem !important;
 }
 
 h5, .MuiTypography-h5 {
-  font-size: 1.1rem !important;
-}
-
-h6, .MuiTypography-h6 {
   font-size: 1rem !important;
 }
 
-p, .MuiTypography-body1 {
+h6, .MuiTypography-h6 {
   font-size: 0.95rem !important;
 }
 
-.MuiTypography-body2 {
+p, .MuiTypography-body1 {
   font-size: 0.875rem !important;
+}
+
+.MuiTypography-body2 {
+  font-size: 0.8125rem !important;
 }
 
 /* Reduzir tamanho de campos de formulário */
 .MuiOutlinedInput-input.MuiInputBase-input {
-  padding: 10px 14px;
-  font-size: 0.95rem;
+  padding: 8px 12px;
+  font-size: 0.875rem;
 }
 
 .MuiInputLabel-root {
-  font-size: 0.95rem !important;
+  font-size: 0.875rem !important;
 }
 
 .MuiFormHelperText-root {
-  font-size: 0.8rem !important;
+  font-size: 0.75rem !important;
   margin-top: 2px !important;
 }
 
@@ -193,6 +195,8 @@ p, .MuiTypography-body1 {
 /* Reduzir margens e padding em Paper */
 .MuiPaper-root {
   padding: 12px !important;
+  margin-bottom: 12px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
 }
 
 @media (min-width: 600px) {
@@ -203,23 +207,45 @@ p, .MuiTypography-body1 {
 
 /* Ajuste na altura da barra de navegação */
 .MuiToolbar-root {
-  min-height: 56px !important;
+  min-height: 48px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
 }
 
 /* Ajuste no espaçamento das tabelas */
 .MuiTableCell-root {
-  padding: 10px 12px !important;
-  font-size: 0.9rem !important;
+  padding: 8px 10px !important;
+  font-size: 0.85rem !important;
 }
 
 /* Ajuste nos botões */
 .MuiButton-root {
+  font-size: 0.85rem !important;
+  padding: 5px 12px !important;
+  min-width: auto !important;
+  line-height: 1.5 !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+}
+
+.MuiButton-contained {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.MuiButton-sizeLarge {
+  padding: 7px 16px !important;
   font-size: 0.9rem !important;
+}
+
+.MuiButton-sizeSmall {
+  padding: 3px 9px !important;
+  font-size: 0.8rem !important;
 }
 
 /* Reduzir tamanho de texto em chips */
 .MuiChip-label {
-  font-size: 0.8rem !important;
+  font-size: 0.75rem !important;
 }
 
 /* Ajustar densidade dos inputs */
@@ -229,10 +255,95 @@ p, .MuiTypography-body1 {
 
 /* Melhorar o espaçamento para formulários densos */
 .MuiFormControl-root {
-  margin-bottom: 12px !important;
+  margin-bottom: 8px !important;
 }
 
 .MuiFormControl-marginDense {
-  margin-top: 6px !important;
-  margin-bottom: 6px !important;
+  margin-top: 4px !important;
+  margin-bottom: 4px !important;
+}
+
+/* Corrigir sobreposição de elementos */
+.MuiGrid-container {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Corrigir tamanhos e espaçamentos de cards/containers */
+.MuiCard-root {
+  overflow: hidden;
+}
+
+/* Ajustar ícones para serem mais consistentes */
+.MuiSvgIcon-root {
+  font-size: 1.2rem !important;
+}
+
+.MuiListItemIcon-root {
+  min-width: 36px !important;
+}
+
+/* Corrigir espaçamento em listas */
+.MuiListItem-root {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+/* Melhorias em menus */
+.MuiMenu-paper {
+  min-width: 160px !important;
+}
+
+.MuiMenuItem-root {
+  min-height: 36px !important;
+  font-size: 0.875rem !important;
+}
+
+/* Dashboard cards e estatísticas */
+.dashboard-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card-content {
+  flex-grow: 1;
+  padding: 12px !important;
+}
+
+.dashboard-stat {
+  font-size: 1.75rem !important;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Ajustes de espaçamento para tabelas responsivas */
+.MuiTableContainer-root {
+  overflow-x: auto;
+}
+
+.MuiTable-root {
+  min-width: 650px;
+}
+
+/* Corrigir altura de linhas para dados compactos */
+.MuiTableRow-root {
+  height: 42px !important;
+}
+
+/* Corrigir badge notificações */
+.MuiBadge-badge {
+  font-size: 0.7rem !important;
+  height: 18px !important;
+  min-width: 18px !important;
+}
+
+/* Ajustar grid para evitar sobreposição */
+.MuiGrid-container {
+  width: calc(100% + 16px) !important;
+  margin: -8px !important;
+}
+
+.MuiGrid-item {
+  padding: 8px !important;
 }
