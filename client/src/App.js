@@ -17,6 +17,8 @@ import CallDetail from './pages/Calls/CallDetail';
 import CounterpartsList from './pages/Counterparts/CounterpartsList';
 import CounterpartDetail from './pages/Counterparts/CounterpartDetail';
 import CounterpartCreate from './pages/Counterparts/CounterpartCreate';
+import UsersList from './pages/Users/UsersList';
+import UserEdit from './pages/Users/UserEdit';
 import NotFound from './pages/NotFound';
 
 // Counterpart Portal Pages
@@ -102,6 +104,10 @@ function App() {
                   <Route index element={<CounterpartsList />} />
                   <Route path="create" element={<CounterpartCreate />} />
                   <Route path=":id" element={<CounterpartDetail />} />
+                </Route>
+                <Route path="users">
+                  <Route index element={<UsersList />} />
+                  <Route path="edit/:id" element={<UserEdit />} />
                 </Route>
               </Route>
               

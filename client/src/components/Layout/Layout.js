@@ -25,6 +25,7 @@ import {
   Dashboard as DashboardIcon,
   BoltOutlined as EnergyIcon,
   Business as CompanyIcon,
+  People as PeopleIcon,
   AccountCircle,
   Logout,
   ChevronLeft as ChevronLeftIcon
@@ -112,6 +113,10 @@ const Layout = () => {
     { text: 'Chamadas de Energia', icon: <EnergyIcon />, path: '/calls' },
     { text: 'Contrapartes', icon: <CompanyIcon />, path: '/counterparts' },
   ];
+
+  if (user && user.role === 'admin') {
+    menuItems.push({ text: 'Usuários', icon: <PeopleIcon />, path: '/users' });
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
