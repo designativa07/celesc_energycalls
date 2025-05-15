@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import {
@@ -83,12 +83,17 @@ const Layout = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(!isMobile);
   const [anchorEl, setAnchorEl] = useState(null);
-  const { user, logout } = useAuth();
+  const { user, logout, getCurrentUser } = useAuth();
   const navigate = useNavigate();
 
   // Debug: console log para verificar a role do usuário
   console.log('Usuário logado:', user);
   console.log('Role do usuário:', user?.role);
+  
+  // Forçar atualização dos dados do usuário no carregamento
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
