@@ -11,12 +11,14 @@ import {
   Paper,
   Alert,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  Divider
 } from '@mui/material';
 import {
   LockOutlined as LockOutlinedIcon,
   Visibility,
-  VisibilityOff
+  VisibilityOff,
+  Business as BusinessIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -132,6 +134,21 @@ const Login = () => {
             >
               Entrar
             </Button>
+            
+            <Divider sx={{ width: '100%', my: 2 }}>ou</Divider>
+            
+            <Button
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              startIcon={<BusinessIcon />}
+              component={RouterLink}
+              to="/counterpart-login"
+              sx={{ mb: 2 }}
+            >
+              Entrar como Contraparte
+            </Button>
+            
             <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <Box>
                 <Link href="#" variant="body2">

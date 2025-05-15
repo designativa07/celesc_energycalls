@@ -16,12 +16,14 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Select
+  Select,
+  Divider
 } from '@mui/material';
 import {
   PersonAddOutlined as PersonAddIcon,
   Visibility,
-  VisibilityOff
+  VisibilityOff,
+  ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -37,6 +39,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -91,11 +94,16 @@ const Register = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleToggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="md">
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 5,
+          marginBottom: 5,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -104,35 +112,48 @@ const Register = () => {
         <Paper
           elevation={3}
           sx={{
-            p: 4,
+            p: { xs: 3, md: 5 },
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            borderRadius: 2,
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <PersonAddIcon />
+          <Box sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start', mb: 2 }}>
+            <IconButton onClick={() => navigate('/login')} sx={{ mr: 1 }}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="body2">Voltar para login</Typography>
+          </Box>
+
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main', width: 56, height: 56 }}>
+            <PersonAddIcon fontSize="large" />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          
+          <Typography component="h1" variant="h4" sx={{ mb: 3, fontWeight: 500 }}>
             Cadastro
           </Typography>
           
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" sx={{ mb: 3 }}>
                 {error}
               </Alert>
             )}
             
             {success && (
-              <Alert severity="success" sx={{ mb: 2 }}>
+              <Alert severity="success" sx={{ mb: 3 }}>
                 {success}
               </Alert>
             )}
             
-            <Grid container spacing={2}>
-              <Grid flex={12}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
+              Informações pessoais
+            </Typography>
+            
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
                 <TextField
                   label="Nome completo"
                   fullWidth
@@ -140,12 +161,11 @@ const Register = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  error={!!error}
-                  helperText={error}
+                  variant="outlined"
                 />
               </Grid>
               
-              <Grid flex={12}>
+              <Grid item xs={12}>
                 <TextField
                   label="E-mail"
                   fullWidth
@@ -154,22 +174,20 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  error={!!error}
-                  helperText={error}
+                  variant="outlined"
                 />
               </Grid>
               
-              <Grid flex={1}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   label="Senha"
                   fullWidth
                   required
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  error={!!error}
-                  helperText={error}
+                  variant="outlined"
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -186,32 +204,54 @@ const Register = () => {
                 />
               </Grid>
               
-              <Grid flex={1}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   label="Confirmar senha"
                   fullWidth
                   required
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  error={!!error}
-                  helperText={error}
+                  variant="outlined"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleToggleConfirmPasswordVisibility}
+                          edge="end"
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
-              
-              <Grid flex={12}>
+            </Grid>
+            
+            <Divider sx={{ my: 4 }} />
+            
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
+              Informações profissionais
+            </Typography>
+            
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   label="Departamento/Área"
                   fullWidth
+                  required
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
+                  variant="outlined"
                 />
               </Grid>
               
-              <Grid flex={12}>
-                <FormControl fullWidth>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth variant="outlined">
                   <InputLabel id="role-label">Cargo</InputLabel>
                   <Select
                     labelId="role-label"
@@ -228,25 +268,20 @@ const Register = () => {
                 </FormControl>
               </Grid>
             </Grid>
+            
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              size="large"
+              sx={{ mt: 4, mb: 2, py: 1.5, fontSize: '1rem' }}
             >
               Cadastrar
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link component={RouterLink} to="/login" variant="body2">
-                  Já tem uma conta? Faça login
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Paper>
       </Box>
-      <Box sx={{ mt: 5, mb: 4, textAlign: 'center' }}>
+      <Box sx={{ mt: 2, mb: 4, textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
           {'Copyright © '}
           <Link color="inherit" href="#">
