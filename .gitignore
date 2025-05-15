@@ -87,4 +87,7 @@ desktop.ini
 db.json
 
 # Outros
-.tmp/ 
+.tmp/
+
+# Client build
+client-build/ 
