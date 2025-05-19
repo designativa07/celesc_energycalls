@@ -102,7 +102,7 @@ const CounterpartCreate = () => {
   };
   
   return (
-    <Box sx={{ width: '100%', px: { xs: 2, sm: 3 } }}>
+    <Box sx={{ width: '100%', px: { xs: 2, sm: 3 }, mt: { xs: 6, sm: 8 } }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" component="h1" sx={{ fontWeight: 600 }}>
           Nova Contraparte

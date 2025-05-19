@@ -125,7 +125,7 @@ const Register = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            borderRadius: theme.shape.borderRadius * 1.5,
+            borderRadius: 0,
           }}
         >
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mb: 1 }}>

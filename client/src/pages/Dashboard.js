@@ -12,7 +12,11 @@ import {
   Container,
   Skeleton,
   Avatar,
-  Chip
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import api from '../api/api';
@@ -24,12 +28,28 @@ import {
   Group as GroupIcon,
   ErrorOutline as ErrorOutlineIcon
 } from '@mui/icons-material';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts';
 
 // Função auxiliar para formatar datas
 const formatDate = (dateString) => {
   const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
   return new Date(dateString).toLocaleDateString('pt-BR', options);
 };
+
+const periodOptions = [
+  { value: 'month', label: 'Mensal' },
+  { value: 'week', label: 'Semanal' },
+  { value: 'year', label: 'Anual' },
+  { value: 'custom', label: 'Personalizado' },
+];
+
+const [period, setPeriod] = React.useState('month');
+const [chartData, setChartData] = React.useState([
+  { periodo: 'Jan/24', precoMedio: 250, quantidade: 1200 },
+  { periodo: 'Fev/24', precoMedio: 230, quantidade: 900 },
+  { periodo: 'Mar/24', precoMedio: 270, quantidade: 1500 },
+  { periodo: 'Abr/24', precoMedio: 260, quantidade: 1100 },
+]);
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -190,10 +210,10 @@ const Dashboard = () => {
       </Box>
       
       {/* Cards de estatísticas */}
-      <Grid container spacing={5} sx={{ mb: 4 }}>
+      <Grid container spacing={0} sx={{ mb: 4 }}>
         {statItems.map((item, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index} sx={{ mb: { xs: 2, sm: 0 } }}>
-            <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 170, borderRadius: 0 }}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card sx={{ display: 'flex', flexDirection: 'column', minHeight: 170, borderRadius: 0, mx: 2 }}>
               <CardContent sx={{ flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                   <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -213,7 +233,7 @@ const Dashboard = () => {
       </Grid>
         
       {/* Chamadas recentes */}
-      <Card sx={{ p: {xs: 2, sm: 3} }}>
+      <Card sx={{ p: {xs: 2, sm: 3}, mt: 4 }}>
         <Typography variant="h5" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
           Acompanhamento de Chamadas Recentes
         </Typography>
@@ -283,6 +303,38 @@ const Dashboard = () => {
                 </Button>
             </Box>
         )}
+      </Card>
+
+      <Card sx={{ p: {xs: 2, sm: 3}, mt: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            Gráfico de Preço Médio e Quantidade de Energia Comprada
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>Período</InputLabel>
+            <Select
+              value={period}
+              label="Período"
+              onChange={e => setPeriod(e.target.value)}
+            >
+              {periodOptions.map(opt => (
+                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <ResponsiveContainer width="100%" height={300}>
+          <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="periodo" />
+            <YAxis yAxisId="left" label={{ value: 'Preço Médio (R$/MWh)', angle: -90, position: 'insideLeft' }} />
+            <YAxis yAxisId="right" orientation="right" label={{ value: 'Quantidade (MWh)', angle: 90, position: 'insideRight' }} />
+            <Tooltip />
+            <Legend />
+            <Bar yAxisId="right" dataKey="quantidade" name="Quantidade (MWh)" fill="#1976d2" barSize={30} />
+            <Line yAxisId="left" type="monotone" dataKey="precoMedio" name="Preço Médio (R$/MWh)" stroke="#ff9800" strokeWidth={3} dot />
+          </ComposedChart>
+        </ResponsiveContainer>
       </Card>
     </Box>
   );

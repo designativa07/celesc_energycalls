@@ -23,6 +23,7 @@
   "author": "CELESC",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "recharts": "^2.15.3"
   }
 }
