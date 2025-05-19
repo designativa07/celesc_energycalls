@@ -10,7 +10,6 @@ import {
   Typography,
   Divider,
   IconButton,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -286,7 +285,7 @@ const Layout = () => {
             EnergyCalls - CELESC
           </Typography>
           <IconButton onClick={colorMode.toggleColorMode} color="inherit" sx={{ mr: 1 }}>
-            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <DarkModeIcon />}
+            {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
           
           <Tooltip title="Notificações">
