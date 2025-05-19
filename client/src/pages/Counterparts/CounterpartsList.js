@@ -203,25 +203,22 @@ const CounterpartsList = () => {
   
   return (
     <Box>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" component="h1">
+      <Box sx={{ mt: 3, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 0, fontWeight: 600 }}>
           Contrapartes
         </Typography>
-        
-        {(user.role === 'admin' || user.role === 'manager') && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/counterparts/create')}
-          >
-            Nova Contraparte
-          </Button>
-        )}
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/counterparts/create')}
+          sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 1 }, position: 'relative', zIndex: 1 }}
+        >
+          + Nova Contraparte
+        </Button>
       </Box>
-      
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid flex={1}>
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={5}>
             <TextField
               fullWidth
               placeholder="Buscar contrapartes..."
@@ -230,98 +227,38 @@ const CounterpartsList = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ ml: 1, mr: 1 }} />
                   </InputAdornment>
-                )
+                ),
+                sx: { pl: 1.5 }
               }}
             />
           </Grid>
-          
-          <Grid flex={1}>
-            <Box sx={{ display: 'flex', gap: 1.5 }}>
-              <Button 
-                variant={showFilters ? "contained" : "outlined"} 
-                startIcon={<FilterIcon />}
-                onClick={toggleFilters}
-                sx={{ flexShrink: 0 }}
-              >
-                Filtros
-              </Button>
-              
-              <FormControl sx={{ flexGrow: 1, minWidth: 120 }}>
-                <InputLabel>Ordenar por</InputLabel>
-                <Select
-                  value={sortBy}
-                  label="Ordenar por"
-                  onChange={handleSortChange}
-                  size="small"
-                >
-                  <MenuItem value="companyName">Empresa</MenuItem>
-                  <MenuItem value="cnpj">CNPJ</MenuItem>
-                  <MenuItem value="createdAt">Data de cadastro</MenuItem>
-                </Select>
-              </FormControl>
-              
-              <Button 
-                variant="outlined" 
-                onClick={handleSortDirectionToggle}
-                sx={{ flexShrink: 0 }}
-              >
-                <SortIcon sx={{ transform: sortDirection === 'desc' ? 'rotate(180deg)' : 'none' }} />
-              </Button>
-            </Box>
+          <Grid item xs={12} md={2}>
+            <Button
+              variant="outlined"
+              startIcon={<FilterIcon />}
+              onClick={toggleFilters}
+              sx={{ minWidth: 120, height: 40, ml: { md: 1 }, mt: { xs: 1, md: 0 } }}
+            >
+              Filtros
+            </Button>
           </Grid>
-          
-          {showFilters && (
-            <>
-              <Grid flex={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-              
-              <Grid flex={1}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Estado</InputLabel>
-                  <Select
-                    name="state"
-                    value={filters.state}
-                    label="Estado"
-                    onChange={handleFilterChange}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    {statesList.map(state => (
-                      <MenuItem key={state.value} value={state.value}>
-                        {state.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid flex={1}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Modelo de Contrato</InputLabel>
-                  <Select
-                    name="contractModel"
-                    value={filters.contractModel}
-                    label="Modelo de Contrato"
-                    onChange={handleFilterChange}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="standard">Padrão</MenuItem>
-                    <MenuItem value="custom">Personalizado</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid flex={12}>
-                <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-                  <Button variant="text" onClick={handleResetFilters}>
-                    Limpar Filtros
-                  </Button>
-                </Box>
-              </Grid>
-            </>
-          )}
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Ordenar por</InputLabel>
+              <Select
+                value={sortBy}
+                label="Ordenar por"
+                onChange={handleSortChange}
+                size="small"
+              >
+                <MenuItem value="companyName">Empresa</MenuItem>
+                <MenuItem value="cnpj">CNPJ</MenuItem>
+                <MenuItem value="createdAt">Data de cadastro</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
       </Paper>
       

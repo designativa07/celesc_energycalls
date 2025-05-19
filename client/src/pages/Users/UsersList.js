@@ -167,31 +167,29 @@ const UsersList = () => {
   
   return (
     <Box>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" component="h1">
+      <Box sx={{ mt: 3, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 0, fontWeight: 600 }}>
           Usuários
         </Typography>
-        
         {user.role === 'admin' && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => navigate('/register')}
+            sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 1 }, position: 'relative', zIndex: 1 }}
           >
             Novo Usuário
           </Button>
         )}
       </Box>
-      
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
-      
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={4}>
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={5}>
             <TextField
               fullWidth
               placeholder="Buscar usuários..."
@@ -200,40 +198,41 @@ const UsersList = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ ml: 1, mr: 1 }} />
                   </InputAdornment>
-                )
+                ),
+                sx: { pl: 1.5 }
               }}
             />
           </Grid>
-          
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={2}>
             <FormControl fullWidth>
               <InputLabel>Cargo</InputLabel>
               <Select
                 value={roleFilter}
                 label="Cargo"
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={e => setRoleFilter(e.target.value)}
+                size="small"
               >
                 <MenuItem value="">Todos</MenuItem>
-                <MenuItem value="admin">Administradores</MenuItem>
-                <MenuItem value="manager">Gerentes</MenuItem>
-                <MenuItem value="user">Usuários</MenuItem>
+                <MenuItem value="admin">Administrador</MenuItem>
+                <MenuItem value="manager">Gerente</MenuItem>
+                <MenuItem value="user">Usuário</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={2}>
             <FormControl fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
                 value={statusFilter}
                 label="Status"
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={e => setStatusFilter(e.target.value)}
+                size="small"
               >
                 <MenuItem value="">Todos</MenuItem>
-                <MenuItem value="true">Ativos</MenuItem>
-                <MenuItem value="false">Inativos</MenuItem>
+                <MenuItem value="true">Ativo</MenuItem>
+                <MenuItem value="false">Inativo</MenuItem>
               </Select>
             </FormControl>
           </Grid>

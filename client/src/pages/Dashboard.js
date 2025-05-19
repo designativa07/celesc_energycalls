@@ -192,8 +192,8 @@ const Dashboard = () => {
       {/* Cards de estatísticas */}
       <Grid container spacing={5} sx={{ mb: 4 }}>
         {statItems.map((item, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 170 }}>
+          <Grid item xs={12} sm={6} md={3} key={index} sx={{ mb: { xs: 2, sm: 0 } }}>
+            <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 170, borderRadius: 0 }}>
               <CardContent sx={{ flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                   <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 500 }}>
