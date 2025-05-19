@@ -18,9 +18,11 @@ import {
   LockOutlined as LockOutlinedIcon,
   Visibility,
   VisibilityOff,
-  Business as BusinessIcon
+  Business as BusinessIcon,
+  ElectricalServices as ElectricalServicesIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '@mui/material/styles';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,6 +31,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,45 +59,58 @@ const Login = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: theme.palette.mode === 'light' 
+          ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.grey[100]} 100%)` 
+          : `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.grey[900]} 100%)`,
+        p: { xs: 2, sm: 3 }
+      }}
+    >
+      <Container component="main" maxWidth="xs">
         <Paper
-          elevation={3}
+          elevation={6}
           sx={{
-            p: 4,
+            p: { xs: 3, sm: 4 },
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            borderRadius: theme.shape.borderRadius * 1.5,
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar 
+            sx={{ 
+              m: 1, 
+              bgcolor: 'primary.main', 
+              width: 56,
+              height: 56 
+            }}
+          >
+            <ElectricalServicesIcon fontSize="large" /> 
           </Avatar>
-          <Typography component="h1" variant="h5">
-            Login
+          <Typography component="h1" variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
+            Acessar Plataforma
           </Typography>
           
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
-            
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
+              {error}
+            </Alert>
+          )}
+          
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
-              label="E-mail"
+              label="Seu E-mail"
               name="email"
               autoComplete="email"
               autoFocus
@@ -106,7 +122,7 @@ const Login = () => {
               required
               fullWidth
               name="password"
-              label="Senha"
+              label="Sua Senha"
               type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
@@ -119,6 +135,7 @@ const Login = () => {
                       aria-label="toggle password visibility"
                       onClick={handleTogglePasswordVisibility}
                       edge="end"
+                      color={showPassword ? "primary" : "default"}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -130,12 +147,18 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              color="primary"
+              size="large"
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
               Entrar
             </Button>
             
-            <Divider sx={{ width: '100%', my: 2 }}>ou</Divider>
+            <Box sx={{ my: 2, display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Divider sx={{ flexGrow: 1 }} />
+              <Typography variant="body2" sx={{ px: 2, color: 'text.secondary' }}>OU</Typography>
+              <Divider sx={{ flexGrow: 1 }} />
+            </Box>
             
             <Button
               fullWidth
@@ -144,37 +167,34 @@ const Login = () => {
               startIcon={<BusinessIcon />}
               component={RouterLink}
               to="/counterpart-login"
-              sx={{ mb: 2 }}
+              size="large"
+              sx={{ mb: 3 }}
             >
-              Entrar como Contraparte
+              Acessar como Contraparte
             </Button>
             
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <Box>
-                <Link href="#" variant="body2">
-                  Esqueceu a senha?
-                </Link>
-              </Box>
-              <Box>
-                <Link component={RouterLink} to="/register" variant="body2">
-                  {"Não tem uma conta? Cadastre-se"}
-                </Link>
-              </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+              <Link component={RouterLink} to="/forgot-password" variant="body2" color="primary.main">
+                Esqueceu a senha?
+              </Link>
+              <Link component={RouterLink} to="/register" variant="body2" color="primary.main">
+                {"Não tem uma conta? Cadastre-se"}
+              </Link>
             </Box>
           </Box>
         </Paper>
-      </Box>
-      <Box sx={{ mt: 8, mb: 4, textAlign: 'center' }}>
+      </Container>
+      <Box sx={{ mt: 'auto', py: 3, textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
           {'Copyright © '}
-          <Link color="inherit" href="#">
+          <Link color="inherit" href="https://celesc.com.br/" target="_blank">
             EnergyCalls CELESC
           </Link>{' '}
           {new Date().getFullYear()}
           {'.'}
         </Typography>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

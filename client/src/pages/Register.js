@@ -17,7 +17,8 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Divider
+  Divider,
+  CircularProgress
 } from '@mui/material';
 import {
   PersonAddOutlined as PersonAddIcon,
@@ -26,6 +27,7 @@ import {
   ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '@mui/material/styles';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -38,10 +40,12 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleChange = (e) => {
     setFormData({
@@ -53,9 +57,9 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Resetar mensagens
     setError('');
     setSuccess('');
+    setLoading(true);
     
     // Validações básicas
     if (!formData.name || !formData.email || !formData.password || !formData.department) {
@@ -79,14 +83,14 @@ const Register = () => {
       
       await register(registerData);
       
-      setSuccess('Usuário registrado com sucesso!');
-      
-      // Redirecionar para a página de login após 2 segundos
+      setSuccess('Usuário registrado com sucesso! Você será redirecionado em breve.');
       setTimeout(() => {
         navigate('/login');
-      }, 2000);
+      }, 3000);
     } catch (error) {
-      setError(error.message);
+      setError(error.response?.data?.message || error.message || 'Erro ao registrar. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,60 +103,67 @@ const Register = () => {
   };
 
   return (
-    <Container component="main" maxWidth="md">
-      <Box
-        sx={{
-          marginTop: 5,
-          marginBottom: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: theme.palette.mode === 'light' 
+          ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.grey[100]} 100%)` 
+          : `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.grey[900]} 100%)`,
+        py: { xs: 3, sm: 4 },
+      }}
+    >
+      <Container component="main" maxWidth="sm">
         <Paper
-          elevation={3}
+          elevation={6}
           sx={{
-            p: { xs: 3, md: 5 },
+            p: { xs: 2.5, sm: 4 },
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            borderRadius: 2,
+            borderRadius: theme.shape.borderRadius * 1.5,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start', mb: 2 }}>
-            <IconButton onClick={() => navigate('/login')} sx={{ mr: 1 }}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="body2">Voltar para login</Typography>
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
+            <Button 
+              startIcon={<ArrowBackIcon />} 
+              onClick={() => navigate('/login')} 
+              sx={{ textTransform: 'none', color: 'text.secondary' }}
+            >
+              Voltar para Login
+            </Button>
           </Box>
 
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main', width: 56, height: 56 }}>
             <PersonAddIcon fontSize="large" />
           </Avatar>
           
-          <Typography component="h1" variant="h4" sx={{ mb: 3, fontWeight: 500 }}>
-            Cadastro
+          <Typography component="h1" variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+            Criar Nova Conta
           </Typography>
           
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
+              <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
                 {error}
               </Alert>
             )}
             
             {success && (
-              <Alert severity="success" sx={{ mb: 3 }}>
+              <Alert severity="success" sx={{ mb: 2, width: '100%' }}>
                 {success}
               </Alert>
             )}
             
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
-              Informações pessoais
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+              Informações Pessoais
             </Typography>
             
-            <Grid container spacing={3}>
+            <Grid container spacing={2.5}>
               <Grid item xs={12}>
                 <TextField
                   label="Nome completo"
@@ -161,7 +172,7 @@ const Register = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  variant="outlined"
+                  disabled={loading || success}
                 />
               </Grid>
               
@@ -174,11 +185,11 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  variant="outlined"
+                  disabled={loading || success}
                 />
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Senha"
                   fullWidth
@@ -187,7 +198,7 @@ const Register = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  variant="outlined"
+                  disabled={loading || success}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -195,6 +206,8 @@ const Register = () => {
                           aria-label="toggle password visibility"
                           onClick={handleTogglePasswordVisibility}
                           edge="end"
+                          color={showPassword ? "primary" : "default"}
+                          disabled={loading || success}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -204,7 +217,7 @@ const Register = () => {
                 />
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Confirmar senha"
                   fullWidth
@@ -213,14 +226,16 @@ const Register = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  variant="outlined"
+                  disabled={loading || success}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          aria-label="toggle password visibility"
+                          aria-label="toggle confirm password visibility"
                           onClick={handleToggleConfirmPasswordVisibility}
                           edge="end"
+                          color={showConfirmPassword ? "primary" : "default"}
+                          disabled={loading || success}
                         >
                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -231,14 +246,14 @@ const Register = () => {
               </Grid>
             </Grid>
             
-            <Divider sx={{ my: 4 }} />
+            <Divider sx={{ my: 3 }} />
             
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
-              Informações profissionais
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+              Informações Profissionais
             </Typography>
             
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Departamento/Área"
                   fullWidth
@@ -246,24 +261,22 @@ const Register = () => {
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  variant="outlined"
+                  disabled={loading || success}
                 />
               </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel id="role-label">Cargo</InputLabel>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required disabled={loading || success}>
+                  <InputLabel id="role-select-label">Nível de Acesso</InputLabel>
                   <Select
-                    labelId="role-label"
-                    id="role"
+                    labelId="role-select-label"
+                    id="role-select"
                     name="role"
                     value={formData.role}
-                    label="Cargo"
+                    label="Nível de Acesso"
                     onChange={handleChange}
                   >
-                    <MenuItem value="user">Usuário</MenuItem>
-                    <MenuItem value="manager">Gerente</MenuItem>
-                    <MenuItem value="admin">Administrador</MenuItem>
+                    <MenuItem value="user">Usuário Padrão</MenuItem>
+                    <MenuItem value="analyst">Analista</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -273,25 +286,28 @@ const Register = () => {
               type="submit"
               fullWidth
               variant="contained"
+              color="primary"
               size="large"
-              sx={{ mt: 4, mb: 2, py: 1.5, fontSize: '1rem' }}
+              disabled={loading || success}
+              sx={{ mt: 4, mb: 2, py: 1.5 }}
             >
-              Cadastrar
+              {loading ? <CircularProgress size={26} color="inherit" /> : 'Criar Conta'}
             </Button>
+            
           </Box>
         </Paper>
-      </Box>
-      <Box sx={{ mt: 2, mb: 4, textAlign: 'center' }}>
+      </Container>
+       <Box sx={{ mt: 'auto', py: 3, textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
           {'Copyright © '}
-          <Link color="inherit" href="#">
+          <Link color="inherit" href="https://celesc.com.br/" target="_blank">
             EnergyCalls CELESC
           </Link>{' '}
           {new Date().getFullYear()}
           {'.'}
         </Typography>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

@@ -19,21 +19,33 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
-  Alert
+  Alert,
+  IconButton as MuiIconButton,
+  Collapse,
+  Tooltip,
+  Skeleton,
+  Container
 } from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
-  FilterList as FilterIcon,
-  SortByAlpha as SortIcon
+  FilterList as FilterListIcon,
+  SortByAlpha as SortIcon,
+  Clear as ClearIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+  ErrorOutline as ErrorOutlineIcon
 } from '@mui/icons-material';
 import api from '../../api/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '@mui/material/styles';
 
 const CallsList = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [calls, setCalls] = useState([]);
   const [filteredCalls, setFilteredCalls] = useState([]);
@@ -48,8 +60,8 @@ const CallsList = () => {
   const [sortDirection, setSortDirection] = useState('asc');
   const [showFilters, setShowFilters] = useState(false);
   
-  // Função para buscar as chamadas de energia
   const fetchCalls = async () => {
+    setInitialLoading(true);
     setLoading(true);
     setError(null);
     
@@ -60,21 +72,21 @@ const CallsList = () => {
     } catch (error) {
       setError('Erro ao carregar chamadas de energia. Por favor, tente novamente.');
       console.error('Erro ao buscar chamadas:', error);
+      setCalls([]);
+      setFilteredCalls([]);
     } finally {
+      setInitialLoading(false);
       setLoading(false);
     }
   };
   
-  // Carregar chamadas ao montar o componente
   useEffect(() => {
     fetchCalls();
   }, []);
   
-  // Filtrar e ordenar chamadas
   useEffect(() => {
     let result = [...calls];
     
-    // Aplicar filtro de pesquisa
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(call => 
@@ -83,7 +95,6 @@ const CallsList = () => {
       );
     }
     
-    // Aplicar filtros
     if (filters.status) {
       result = result.filter(call => call.status === filters.status);
     }
@@ -101,7 +112,6 @@ const CallsList = () => {
       result = result.filter(call => call.isExtraordinary === isExtraordinary);
     }
     
-    // Ordenar resultado
     result.sort((a, b) => {
       let valueA, valueB;
       
@@ -137,7 +147,6 @@ const CallsList = () => {
     setFilteredCalls(result);
   }, [calls, search, filters, sortBy, sortDirection]);
   
-  // Funções auxiliares para formatar dados
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -156,37 +165,30 @@ const CallsList = () => {
     });
   };
   
-  const getStatusColor = (status) => {
+  const getStatusChipProps = (status) => {
     switch (status) {
-      case 'draft': return 'warning';
-      case 'open': return 'success';
-      case 'closed': return 'primary';
-      case 'completed': return 'secondary';
-      case 'canceled': return 'error';
-      default: return 'default';
-    }
-  };
-  
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'draft': return 'Rascunho';
-      case 'open': return 'Aberta';
-      case 'closed': return 'Fechada';
-      case 'completed': return 'Concluída';
-      case 'canceled': return 'Cancelada';
-      default: return status;
+      case 'draft': return { label: 'Rascunho', color: 'warning' };
+      case 'open': return { label: 'Aberta', color: 'success' };
+      case 'closed': return { label: 'Fechada', color: 'primary' };
+      case 'completed': return { label: 'Concluída', color: 'info' };
+      case 'canceled': return { label: 'Cancelada', color: 'error' };
+      default: return { label: status ? status.charAt(0).toUpperCase() + status.slice(1) : 'N/A', color: 'default' };
     }
   };
   
   const getTypeLabel = (type) => {
-    return type === 'buy' ? 'Compra' : 'Venda';
+    if (type === 'buy') return 'Compra';
+    if (type === 'sell') return 'Venda';
+    return 'N/A';
   };
   
   const getEnergyTypeLabel = (energyType) => {
-    return energyType === 'conventional' ? 'Convencional' : 'Incentivada';
+    if (energyType === 'conventional') return 'Convencional';
+    if (energyType === 'incentivized') return 'Incentivada';
+    if (energyType === 'renewable') return 'Renovável';
+    return 'N/A';
   };
   
-  // Manipuladores de eventos
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -214,263 +216,249 @@ const CallsList = () => {
       energyType: '',
       isExtraordinary: ''
     });
+    setSortBy('deadline');
+    setSortDirection('asc');
   };
   
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
   
-  // Renderização condicional para carregamento
-  if (loading && calls.length === 0) {
+  if (initialLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="70vh">
-        <CircularProgress />
+      <Box p={2}>
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Skeleton variant="text" width={250} height={40} />
+          <Skeleton variant="rectangular" width={150} height={40} />
+        </Box>
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={4}><Skeleton variant="rounded" height={56} /></Grid>
+            <Grid item xs={12} md={2}><Skeleton variant="rounded" height={56} /></Grid>
+            <Grid item xs={12} md={2}><Skeleton variant="rounded" height={56} /></Grid>
+            <Grid item xs={12} md={2}><Skeleton variant="rounded" height={56} /></Grid>
+            <Grid item xs={12} md={2}><Skeleton variant="rounded" height={56} /></Grid>
+          </Grid>
+        </Paper>
+        <Grid container spacing={3}>
+          {[...Array(6)].map((_, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card variant="outlined">
+                <CardContent sx={{ p: 2 }}>
+                  <Skeleton variant="text" width="80%" height={28} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" width={100} height={22} sx={{ mb: 1.5, borderRadius: '4px' }} />
+                  <Skeleton variant="text" width="60%" height={18} />
+                  <Skeleton variant="text" width="70%" height={18} sx={{ mb: 1 }}/>
+                </CardContent>
+                <Divider/>
+                <CardActions sx={{ p: 1.5, justifyContent: 'flex-end' }}>
+                  <Skeleton variant="rounded" width={100} height={36} />
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
+    );
+  }
+
+  if (error && !loading) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <ErrorOutlineIcon sx={{ fontSize: 60, color: 'error.main', mb: 2 }} />
+            <Typography variant="h5" gutterBottom>
+              Oops! Algo deu errado.
+            </Typography>
+            <Typography color="text.secondary" sx={{ mb: 3 }}>
+              {error}
+            </Typography>
+            <Button variant="contained" onClick={fetchCalls} disabled={loading}>
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Tentar Novamente'}
+            </Button>
+        </Paper>
+      </Container>
     );
   }
   
   return (
-    <Box>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" component="h1">
+    <Box p={2}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
           Chamadas de Energia
         </Typography>
         
-        {(user.role === 'admin' || user.role === 'manager') && (
+        {(user?.role === 'admin' || user?.role === 'manager') && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => navigate('/calls/create')}
+            size="large"
           >
             Nova Chamada
           </Button>
         )}
       </Box>
       
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid flex={1}>
-            <TextField
-              fullWidth
-              placeholder="Buscar chamadas..."
-              value={search}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-            />
-          </Grid>
-          
-          <Grid flex={1}>
-            <Box sx={{ display: 'flex', gap: 1.5 }}>
-              <Button 
-                variant={showFilters ? "contained" : "outlined"} 
-                startIcon={<FilterIcon />}
-                onClick={toggleFilters}
-                sx={{ flexShrink: 0 }}
-              >
-                Filtros
-              </Button>
-              
-              <FormControl sx={{ flexGrow: 1, minWidth: 120 }}>
-                <InputLabel>Ordenar por</InputLabel>
-                <Select
-                  value={sortBy}
-                  label="Ordenar por"
-                  onChange={handleSortChange}
-                  size="small"
-                >
-                  <MenuItem value="deadline">Prazo</MenuItem>
-                  <MenuItem value="title">Título</MenuItem>
-                  <MenuItem value="createdAt">Data de criação</MenuItem>
-                  <MenuItem value="status">Status</MenuItem>
+      <Paper sx={{ p: 2.5, mb: 3 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: showFilters ? 2 : 0 }}>
+          <Typography variant="h6" sx={{ fontWeight: 500 }}>Filtros & Ordenação</Typography>
+          <Button 
+            onClick={toggleFilters} 
+            variant="outlined"
+            size="small"
+            startIcon={<FilterListIcon />} 
+            endIcon={showFilters ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          >
+            {showFilters ? 'Ocultar' : 'Mostrar'} Filtros
+          </Button>
+        </Stack>
+
+        <Collapse in={showFilters}>
+          <Grid container spacing={2.5} alignItems="flex-end" sx={{ pt: 2 }}>
+            <Grid item xs={12} md={5}>
+              <TextField
+                fullWidth
+                label="Pesquisar por título ou descrição"
+                variant="outlined"
+                value={search}
+                onChange={handleSearchChange}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
+                  endAdornment: search && (
+                    <InputAdornment position="end">
+                      <MuiIconButton onClick={() => setSearch('')} edge="end" size="small">
+                        <ClearIcon fontSize="small" />
+                      </MuiIconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={2.5}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Status</InputLabel>
+                <Select name="status" value={filters.status} label="Status" onChange={handleFilterChange}>
+                  <MenuItem value=""><em>Todos</em></MenuItem>
+                  <MenuItem value="draft">Rascunho</MenuItem>
+                  <MenuItem value="open">Aberta</MenuItem>
+                  <MenuItem value="closed">Fechada</MenuItem>
+                  <MenuItem value="completed">Concluída</MenuItem>
+                  <MenuItem value="canceled">Cancelada</MenuItem>
                 </Select>
               </FormControl>
-              
-              <Button 
-                variant="outlined" 
-                onClick={handleSortDirectionToggle}
-                sx={{ flexShrink: 0 }}
-              >
-                <SortIcon sx={{ transform: sortDirection === 'desc' ? 'rotate(180deg)' : 'none' }} />
-              </Button>
-            </Box>
-          </Grid>
-          
-          {showFilters && (
-            <>
-              <Grid flex={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-              
-              <Grid flex={1}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    name="status"
-                    value={filters.status}
-                    label="Status"
-                    onChange={handleFilterChange}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="draft">Rascunho</MenuItem>
-                    <MenuItem value="open">Aberta</MenuItem>
-                    <MenuItem value="closed">Fechada</MenuItem>
-                    <MenuItem value="completed">Concluída</MenuItem>
-                    <MenuItem value="canceled">Cancelada</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid flex={1}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Tipo</InputLabel>
-                  <Select
-                    name="type"
-                    value={filters.type}
-                    label="Tipo"
-                    onChange={handleFilterChange}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="buy">Compra</MenuItem>
-                    <MenuItem value="sell">Venda</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid flex={1}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Tipo de Energia</InputLabel>
-                  <Select
-                    name="energyType"
-                    value={filters.energyType}
-                    label="Tipo de Energia"
-                    onChange={handleFilterChange}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="conventional">Convencional</MenuItem>
-                    <MenuItem value="incentivized">Incentivada</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid flex={1}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Extraordinária</InputLabel>
-                  <Select
-                    name="isExtraordinary"
-                    value={filters.isExtraordinary}
-                    label="Extraordinária"
-                    onChange={handleFilterChange}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="true">Sim</MenuItem>
-                    <MenuItem value="false">Não</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid flex={12}>
-                <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-                  <Button variant="text" onClick={handleResetFilters}>
+            </Grid>
+            <Grid item xs={12} sm={6} md={2.5}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Tipo de Chamada</InputLabel>
+                <Select name="type" value={filters.type} label="Tipo de Chamada" onChange={handleFilterChange}>
+                  <MenuItem value=""><em>Ambos</em></MenuItem>
+                  <MenuItem value="buy">Compra</MenuItem>
+                  <MenuItem value="sell">Venda</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2}> 
+                <Button 
+                    fullWidth 
+                    onClick={handleResetFilters} 
+                    variant="text" 
+                    color="inherit" 
+                    startIcon={<ClearIcon />}
+                    sx={{ height: '56px'}}
+                >
                     Limpar Filtros
-                  </Button>
-                </Box>
-              </Grid>
-            </>
-          )}
-        </Grid>
+                </Button>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+                <FormControl fullWidth variant="outlined">
+                    <InputLabel>Ordenar Por</InputLabel>
+                    <Select name="sortBy" value={sortBy} label="Ordenar Por" onChange={handleSortChange}>
+                        <MenuItem value="deadline">Prazo Final</MenuItem>
+                        <MenuItem value="createdAt">Data de Criação</MenuItem>
+                        <MenuItem value="title">Título</MenuItem>
+                        <MenuItem value="status">Status</MenuItem>
+                    </Select>
+                </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={2}>
+                <Tooltip title={sortDirection === 'asc' ? "Ordem Ascendente" : "Ordem Descendente" }>
+                    <Button 
+                        fullWidth 
+                        variant="outlined" 
+                        onClick={handleSortDirectionToggle} 
+                        startIcon={sortDirection === 'asc' ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        sx={{ height: '56px'}}
+                    >
+                        {sortDirection === 'asc' ? 'ASC' : 'DESC'}
+                    </Button>
+                </Tooltip>
+            </Grid>
+          </Grid>
+        </Collapse>
       </Paper>
-      
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
+
+      {loading && filteredCalls.length > 0 && (
+        <Box display="flex" justifyContent="center" sx={{my: 3}}><CircularProgress /></Box>
       )}
-      
-      {filteredCalls.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary">
-            Nenhuma chamada de energia encontrada.
+
+      {!loading && filteredCalls.length === 0 && (
+        <Paper sx={{ p: 4, textAlign: 'center', mt: 3 }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Nenhuma chamada encontrada
           </Typography>
-          {search || Object.values(filters).some(value => value !== '') ? (
-            <Button variant="text" onClick={handleResetFilters} sx={{ mt: 2 }}>
-              Limpar Filtros
+          <Typography color="text.secondary" sx={{mb:2}}>
+            Tente ajustar seus filtros ou crie uma nova chamada.
+          </Typography>
+          <Button onClick={handleResetFilters} variant='outlined' sx={{mr:1}}>Limpar Filtros</Button>
+          {(user?.role === 'admin' || user?.role === 'manager') && (
+            <Button variant="contained" onClick={() => navigate('/calls/create')}>
+              Criar Nova Chamada
             </Button>
-          ) : (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Crie uma nova chamada para começar.
-            </Typography>
           )}
         </Paper>
-      ) : (
-        <Grid container spacing={4}>
-          {filteredCalls.map(call => (
-            <Grid item xs={12} sm={6} md={4} key={call.id}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                  <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                    <Chip 
-                      label={getTypeLabel(call.type)} 
-                      size="small" 
-                      color={call.type === 'buy' ? 'info' : 'secondary'} 
-                    />
-                    <Chip 
-                      label={getStatusLabel(call.status)} 
-                      size="small" 
-                      color={getStatusColor(call.status)} 
-                    />
-                    {call.isExtraordinary && (
-                      <Chip 
-                        label="Extraordinária" 
-                        size="small" 
-                        variant="outlined" 
-                      />
-                    )}
-                  </Stack>
-                  
-                  <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+      )}
+
+      <Grid container spacing={3}>
+        {!loading && filteredCalls.map(call => {
+          const statusProps = getStatusChipProps(call.status);
+          return (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={call.id}>
+              <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderColor: theme.palette.divider }}>
+                <CardContent sx={{ flexGrow: 1, p: 2 }}>
+                  <Typography variant="h6" component="div" title={call.title} noWrap sx={{ fontWeight: 600, mb: 0.5 }}>
                     {call.title}
                   </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                    <Chip label={statusProps.label} color={statusProps.color} size="small" sx={{ fontWeight: 500 }} />
+                    <Chip label={getTypeLabel(call.type)} size="small" variant="outlined" />
+                  </Stack>
                   
-                  <Box mt={2}>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      <strong>Energia:</strong> {getEnergyTypeLabel(call.energyType)}
-                    </Typography>
-                    
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      <strong>Quantidade:</strong> {call.amount} MWh
-                    </Typography>
-                    
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      <strong>Período:</strong> {formatDate(call.startDate)} a {formatDate(call.endDate)}
-                    </Typography>
-                    
-                    <Typography variant="body1" color="text.secondary">
-                      <strong>Prazo:</strong> {formatDateTime(call.deadline)}
-                    </Typography>
-                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                    Prazo: {formatDate(call.deadline)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                    Energia: {getEnergyTypeLabel(call.energyType)}
+                  </Typography>
+                  {call.volumeMwm && <Typography variant="body2" color="text.secondary">Volume: {call.volumeMwm} MWm</Typography>}
                 </CardContent>
-                
-                <CardActions sx={{ px: 3, pb: 3, pt: 1 }}>
+                <Divider />
+                <CardActions sx={{ p: 1.5, justifyContent: 'flex-end' }}>
                   <Button 
+                    variant="contained"
+                    color="primary"
                     size="medium"
-                    variant="outlined"
                     onClick={() => navigate(`/calls/${call.id}`)}
-                    fullWidth
                   >
-                    Ver detalhes
+                    Ver Detalhes
                   </Button>
                 </CardActions>
               </Card>
             </Grid>
-          ))}
-        </Grid>
-      )}
+          );
+        })}
+      </Grid>
     </Box>
   );
 };

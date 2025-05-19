@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import {
@@ -44,59 +44,61 @@ const drawerWidth = 220;
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 1),
+  padding: theme.spacing(0, 2),
   ...theme.mixins.toolbar,
   justifyContent: 'space-between',
-  backgroundColor: theme.palette.primary.main,
-  color: '#fff',
-  minHeight: '48px'
+  minHeight: '56px',
+  borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
 const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
-  margin: theme.spacing(0.5, 0.5),
-  borderRadius: theme.shape.borderRadius,
-  fontSize: '0.85rem',
-  padding: '6px 10px',
+  padding: theme.spacing(1, 2),
+  margin: theme.spacing(0.5, 1),
   '&.Mui-selected': {
-    backgroundColor: theme.palette.mode === 'light' 
-      ? 'rgba(25, 118, 210, 0.1)' 
-      : 'rgba(144, 202, 249, 0.1)',
-    color: theme.palette.primary.main,
+    backgroundColor: theme.palette.action.selected,
     '& .MuiListItemIcon-root': {
-      color: theme.palette.primary.main,
-    }
+    },
   },
-  '&:hover': {
-    backgroundColor: theme.palette.mode === 'light' 
-      ? 'rgba(25, 118, 210, 0.05)' 
-      : 'rgba(144, 202, 249, 0.05)',
-  }
 }));
 
 const AppBarStyled = styled(AppBar)(({ theme }) => ({
-  boxShadow: theme.palette.mode === 'light' 
-    ? '0 1px 8px 0 rgba(0,0,0,0.05)' 
-    : '0 1px 8px 0 rgba(0,0,0,0.2)',
-  backdropFilter: 'blur(8px)',
-  backgroundColor: theme.palette.mode === 'light' 
-    ? 'rgba(255, 255, 255, 0.9)' 
-    : 'rgba(18, 18, 18, 0.9)',
-  color: theme.palette.mode === 'light' ? theme.palette.text.primary : '#fff',
-  zIndex: theme.zIndex.drawer + 1, // Garante que AppBar fique sobre o drawer
+  backdropFilter: 'blur(10px)',
+  backgroundColor: theme.palette.mode === 'light'
+    ? 'rgba(244, 246, 248, 0.85)'
+    : 'rgba(10, 25, 41, 0.85)',
+  color: theme.palette.text.primary,
+  zIndex: theme.zIndex.drawer + 1,
+}));
+
+const UserAvatar = styled(Avatar)(({ theme }) => ({
+  width: 32,
+  height: 32,
+  backgroundColor: theme.palette.secondary.main,
+  color: theme.palette.secondary.contrastText,
+  fontSize: '0.9rem',
+  fontWeight: 500,
 }));
 
 const CounterpartPortalLayout = () => {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const location = useLocation();
-  const [drawerOpen, setDrawerOpen] = useState(!isMobile);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const { counterpart, logout } = useCounterpartAuth();
 
+  useEffect(() => {
+    if (!isMobile && drawerOpen) {
+      setDrawerOpen(false);
+    }
+  }, [isMobile, drawerOpen]);
+
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+    if (isMobile) {
+      setDrawerOpen(!drawerOpen);
+    }
   };
 
   const handleMenuOpen = (event) => {
@@ -115,153 +117,155 @@ const CounterpartPortalLayout = () => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    if (isMobile) {
+    if (isMobile && drawerOpen) {
       setDrawerOpen(false);
     }
   };
 
-  const isSelected = (path) => {
-    if (path === '/counterpart-portal') {
-      return location.pathname === '/counterpart-portal';
-    }
+  const isSelected = (path, exact = false) => {
+    if (exact) return location.pathname === path;
     return location.pathname.startsWith(path);
   };
 
+  const menuItems = [
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/counterpart-portal', exact: true },
+    { text: 'Chamadas', icon: <ViewListIcon />, path: '/counterpart-portal/calls' },
+    { text: 'Minhas Propostas', icon: <SendIcon />, path: '/counterpart-portal/my-proposals' },
+  ];
+
+  const drawerContent = (
+    <>
+      <DrawerHeader>
+        <Typography variant="h6" component="div" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
+          Portal CELESC
+        </Typography>
+        <IconButton onClick={handleDrawerToggle}>
+          <ChevronLeftIcon />
+        </IconButton>
+      </DrawerHeader>
+      <List component="nav">
+        {menuItems.map((item) => (
+          <StyledListItemButton
+            key={item.text}
+            selected={isSelected(item.path, item.exact)}
+            onClick={() => handleNavigation(item.path)}
+          >
+            <ListItemIcon sx={{ minWidth: 38 }}>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 500, fontSize: '0.9rem' }} />
+          </StyledListItemButton>
+        ))}
+      </List>
+    </>
+  );
+
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <AppBarStyled position="fixed">
         <Toolbar variant="dense">
-          <IconButton
-            size="small"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 1, ...(drawerOpen && isMobile && { display: 'none' }) }}
-            onClick={handleDrawerToggle}
-          >
-            <MenuIcon fontSize="small" />
-          </IconButton>
-          <Typography 
-            variant="h6" 
-            component="div" 
-            sx={{ 
+          {isMobile && (
+            <IconButton
+              size="medium"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 1 }}
+              onClick={handleDrawerToggle}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
               flexGrow: 1,
-              fontWeight: 500, 
-              fontSize: '0.95rem',
-              background: theme.palette.mode === 'dark' 
-                ? 'linear-gradient(90deg, #90caf9 0%, #1976d2 100%)' 
-                : 'linear-gradient(90deg, #1976d2 0%, #0d47a1 100%)',
+              fontWeight: 600,
+              fontSize: '1rem',
+              background: theme.palette.mode === 'dark'
+                ? `linear-gradient(90deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`
+                : `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              display: { xs: 'none', sm: 'block' }
             }}
           >
-            Portal da Contraparte - EnergyCalls
+            Portal da Contraparte
           </Typography>
-          
+
           {!isMobile && (
-            <Box sx={{ mx: 1 }}>
-              <Button 
-                color="inherit" 
-                size="small"
-                sx={{ 
-                  mx: 0.5,
-                  fontWeight: isSelected('/counterpart-portal') && location.pathname === '/counterpart-portal' ? 600 : 400,
-                  fontSize: '0.85rem',
-                  borderBottom: isSelected('/counterpart-portal') && location.pathname === '/counterpart-portal' 
-                    ? `2px solid ${theme.palette.primary.main}` : 'none',
-                  borderRadius: 0,
-                  py: 1,
-                  px: 1.5
-                }} 
-                onClick={() => handleNavigation('/counterpart-portal')}
-              >
-                Dashboard
-              </Button>
-              <Button 
-                color="inherit" 
-                size="small"
-                sx={{ 
-                  mx: 0.5,
-                  fontWeight: isSelected('/counterpart-portal/calls') ? 600 : 400,
-                  fontSize: '0.85rem',
-                  borderBottom: isSelected('/counterpart-portal/calls') 
-                    ? `2px solid ${theme.palette.primary.main}` : 'none',
-                  borderRadius: 0,
-                  py: 1,
-                  px: 1.5
-                }}
-                onClick={() => handleNavigation('/counterpart-portal/calls')}
-              >
-                Chamadas
-              </Button>
-              <Button 
-                color="inherit" 
-                size="small"
-                sx={{ 
-                  mx: 0.5,
-                  fontWeight: isSelected('/counterpart-portal/my-proposals') ? 600 : 400,
-                  fontSize: '0.85rem',
-                  borderBottom: isSelected('/counterpart-portal/my-proposals') 
-                    ? `2px solid ${theme.palette.primary.main}` : 'none',
-                  borderRadius: 0,
-                  py: 1,
-                  px: 1.5
-                }}
-                onClick={() => handleNavigation('/counterpart-portal/my-proposals')}
-              >
-                Propostas
-              </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {menuItems.map(item => (
+                <Button
+                  key={item.text}
+                  color="inherit"
+                  onClick={() => handleNavigation(item.path)}
+                  size="small"
+                  sx={{
+                    mx: 0.5,
+                    fontWeight: isSelected(item.path, item.exact) ? 600 : 500,
+                    fontSize: '0.875rem',
+                    color: isSelected(item.path, item.exact) ? theme.palette.primary.main : theme.palette.text.secondary,
+                    borderBottom: isSelected(item.path, item.exact)
+                      ? `3px solid ${theme.palette.primary.main}`
+                      : '3px solid transparent',
+                    borderRadius: 0,
+                    pb: 0.5,
+                    mt: '3px',
+                    transition: 'color 0.2s, border-bottom-color 0.2s',
+                    '&:hover': {
+                      color: theme.palette.primary.light,
+                      backgroundColor: 'transparent',
+                      borderBottomColor: theme.palette.primary.light,
+                    }
+                  }}
+                >
+                  {item.text}
+                </Button>
+              ))}
             </Box>
           )}
 
-          <Tooltip title="Notificações">
-            <IconButton 
-              color="inherit" 
-              size="small"
-              sx={{ ml: 0.5, mr: 0.5 }}
-            >
-              <Badge badgeContent={2} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.7rem', height: '18px', minWidth: '18px' } }}>
-                <NotificationsIcon fontSize="small" />
-              </Badge>
-            </IconButton>
-          </Tooltip>
+          <Box sx={{ flexGrow: isMobile ? 1 : 0 }} />
 
           <Tooltip title={theme.palette.mode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}>
-            <IconButton 
-              onClick={colorMode.toggleColorMode} 
-              color="inherit" 
-              size="small"
-              sx={{ mr: 0.5 }}
+            <IconButton
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+              size="medium"
+              sx={{ mx: 0.5 }}
             >
               {theme.palette.mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
             </IconButton>
           </Tooltip>
 
+          <Tooltip title="Notificações">
+            <IconButton
+              color="inherit"
+              size="medium"
+              sx={{ mx: 0.5 }}
+            >
+              <Badge badgeContent={counterpart?.notificationsCount || 0} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.7rem', height: '16px', minWidth: '16px' } }}>
+                <NotificationsIcon fontSize="small" />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title={counterpart?.companyName || 'Contraparte'}>
             <IconButton
-              size="small"
-              aria-label="perfil do usuário"
-              aria-controls="menu-appbar"
+              size="medium"
+              aria-label="perfil da contraparte"
+              aria-controls="menu-appbar-counterpart"
               aria-haspopup="true"
               onClick={handleMenuOpen}
               color="inherit"
               sx={{ ml: 0.5 }}
             >
-              <Avatar 
-                sx={{ 
-                  width: 28, 
-                  height: 28, 
-                  bgcolor: theme.palette.secondary.main,
-                  fontSize: '0.8rem'
-                }}
-              >
-                {counterpart?.companyName?.charAt(0) || 'C'}
-              </Avatar>
+              <UserAvatar>
+                {counterpart?.companyName ? counterpart.companyName.charAt(0).toUpperCase() : <AccountCircle />}
+              </UserAvatar>
             </IconButton>
           </Tooltip>
           <Menu
-            id="menu-appbar"
+            id="menu-appbar-counterpart"
             anchorEl={anchorEl}
             anchorOrigin={{
               vertical: 'bottom',
@@ -275,159 +279,85 @@ const CounterpartPortalLayout = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
             PaperProps={{
+              elevation: 0,
               sx: {
-                mt: 1,
-                boxShadow: theme.palette.mode === 'light'
-                  ? '0 4px 12px rgba(0,0,0,0.1)'
-                  : '0 4px 12px rgba(0,0,0,0.3)',
-                minWidth: 180
-              }
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
+                mt: 1.5,
+                '& .MuiAvatar-root': {
+                  width: 28,
+                  height: 28,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
             }}
           >
-            <MenuItem dense disabled sx={{ fontSize: '0.85rem', opacity: 0.7 }}>
-              {counterpart?.companyName}
+            <MenuItem disabled sx={{ opacity: '1 !important' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <Typography variant="subtitle2" fontWeight={600}>{counterpart?.companyName}</Typography>
+                <Typography variant="caption" color="text.secondary">{counterpart?.email}</Typography>
+              </Box>
             </MenuItem>
             <Divider sx={{ my: 0.5 }} />
-            <MenuItem dense onClick={handleLogout} sx={{ fontSize: '0.85rem' }}>
-              <ListItemIcon sx={{ minWidth: 30 }}>
+            <MenuItem onClick={handleLogout} sx={{ color: theme.palette.error.main }}>
+              <ListItemIcon sx={{ color: theme.palette.error.main, minWidth: 36 }}>
                 <LogoutIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Sair" />
+              Sair
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBarStyled>
-      
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
+
+      {isMobile && (
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={drawerOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
             width: drawerWidth,
-            boxSizing: 'border-box',
-            borderRight: 'none',
-            boxShadow: theme.palette.mode === 'light'
-              ? '1px 0 8px rgba(0,0,0,0.05)'
-              : '1px 0 8px rgba(0,0,0,0.2)',
-          },
-        }}
-        variant={isMobile ? "temporary" : "persistent"}
-        anchor="left"
-        open={drawerOpen}
-        onClose={handleDrawerToggle}
-      >
-        <DrawerHeader>
-          <Typography variant="subtitle1" sx={{ flexGrow: 1, fontWeight: 500, fontSize: '0.9rem' }}>
-            Portal Contraparte
-          </Typography>
-          <IconButton onClick={handleDrawerToggle} sx={{ color: '#fff', padding: '4px' }}>
-            <ChevronLeftIcon fontSize="small" />
-          </IconButton>
-        </DrawerHeader>
-        
-        <Box sx={{ p: 1.5, overflow: 'auto' }}>
-          <Typography variant="caption" color="text.secondary" sx={{ pl: 1, display: 'block', mb: 0.5, fontSize: '0.75rem' }}>
-            {counterpart?.companyName}
-          </Typography>
-          
-          <List dense sx={{ px: 0 }} component="nav">
-            <ListItem disablePadding>
-              <StyledListItemButton 
-                selected={isSelected('/counterpart-portal') && location.pathname === '/counterpart-portal'} 
-                onClick={() => handleNavigation('/counterpart-portal')}
-              >
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <DashboardIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" primaryTypographyProps={{ fontSize: '0.85rem' }} />
-              </StyledListItemButton>
-            </ListItem>
-            
-            <ListItem disablePadding>
-              <StyledListItemButton 
-                selected={isSelected('/counterpart-portal/calls')} 
-                onClick={() => handleNavigation('/counterpart-portal/calls')}
-              >
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <ViewListIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Chamadas Disponíveis" primaryTypographyProps={{ fontSize: '0.85rem' }} />
-              </StyledListItemButton>
-            </ListItem>
-            
-            <ListItem disablePadding>
-              <StyledListItemButton 
-                selected={isSelected('/counterpart-portal/my-proposals')} 
-                onClick={() => handleNavigation('/counterpart-portal/my-proposals')}
-              >
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <SendIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Minhas Propostas" primaryTypographyProps={{ fontSize: '0.85rem' }} />
-              </StyledListItemButton>
-            </ListItem>
-          </List>
-        </Box>
-        
-        <Box sx={{ mt: 'auto', p: 1.5 }}>
-          <Box 
-            sx={{ 
-              p: 1.5, 
-              borderRadius: 1.5,
-              bgcolor: theme.palette.mode === 'light' 
-                ? 'rgba(25, 118, 210, 0.05)' 
-                : 'rgba(144, 202, 249, 0.05)',
-              border: `1px solid ${theme.palette.mode === 'light' 
-                ? 'rgba(25, 118, 210, 0.1)' 
-                : 'rgba(144, 202, 249, 0.1)'}`
-            }}
-          >
-            <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 0.5, fontSize: '0.75rem' }}>
-              Contraparte:
-            </Typography>
-            <Typography variant="body2" fontWeight={500} sx={{ fontSize: '0.85rem' }}>
-              {counterpart?.companyName || 'Empresa'}
-            </Typography>
-            <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', opacity: 0.8 }}>
-              {counterpart?.email || 'contato@empresa.com'}
-            </Typography>
-          </Box>
-        </Box>
-      </Drawer>
-      
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+            },
+          }}
+        >
+          {drawerContent}
+        </Drawer>
+      )}
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          pt: 6,
-          px: { xs: 1, sm: 2, md: 2 },
-          pb: 2,
-          width: { sm: `calc(100% - ${drawerOpen ? drawerWidth : 0}px)` },
-          ml: { sm: drawerOpen ? `${drawerWidth}px` : 0 },
-          transition: (theme) => theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
+          py: 3,
+          px: { xs: 2, sm: 3 },
+          mt: '48px',
+          width: '100%',
           overflowX: 'hidden',
         }}
       >
-        <Box 
-          sx={{
-            backgroundColor: theme.palette.mode === 'light' 
-              ? 'rgba(255,255,255,0.9)' 
-              : 'rgba(30,30,30,0.9)',
-            borderRadius: 1,
-            p: { xs: 1, sm: 2 },
-            overflow: 'auto',
-            boxShadow: theme.palette.mode === 'light'
-              ? '0 1px 4px rgba(0,0,0,0.05)'
-              : '0 1px 4px rgba(0,0,0,0.15)',
-            mt: 0.5,
-            mb: 0.5
-          }}
-        >
+        <Container maxWidth="xl">
           <Outlet />
-        </Box>
+        </Container>
       </Box>
     </Box>
   );
