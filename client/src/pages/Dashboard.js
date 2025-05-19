@@ -190,7 +190,7 @@ const Dashboard = () => {
       </Box>
       
       {/* Cards de estatísticas */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={5} sx={{ mb: 4 }}>
         {statItems.map((item, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 170 }}>

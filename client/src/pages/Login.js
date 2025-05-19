@@ -78,7 +78,7 @@ const Login = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            borderRadius: theme.shape.borderRadius,
+            borderRadius: 0,
           }}
         >
           <img src="/logo-celesc-horizontal-peq.png" alt="Celesc Logo" style={{ height: '40px', marginBottom: theme.spacing(2) }} />

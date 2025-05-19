@@ -99,7 +99,7 @@ const CallCreate = () => {
         </Box>
       </Box>
       
-      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: theme.shape.borderRadius }}>
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 0 }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
