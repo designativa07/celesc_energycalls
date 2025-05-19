@@ -36,21 +36,6 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('pt-BR', options);
 };
 
-const periodOptions = [
-  { value: 'month', label: 'Mensal' },
-  { value: 'week', label: 'Semanal' },
-  { value: 'year', label: 'Anual' },
-  { value: 'custom', label: 'Personalizado' },
-];
-
-const [period, setPeriod] = React.useState('month');
-const [chartData, setChartData] = React.useState([
-  { periodo: 'Jan/24', precoMedio: 250, quantidade: 1200 },
-  { periodo: 'Fev/24', precoMedio: 230, quantidade: 900 },
-  { periodo: 'Mar/24', precoMedio: 270, quantidade: 1500 },
-  { periodo: 'Abr/24', precoMedio: 260, quantidade: 1100 },
-]);
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -63,6 +48,19 @@ const Dashboard = () => {
     counterparts: 0
   });
   const [recentCalls, setRecentCalls] = useState([]);
+  const periodOptions = [
+    { value: 'month', label: 'Mensal' },
+    { value: 'week', label: 'Semanal' },
+    { value: 'year', label: 'Anual' },
+    { value: 'custom', label: 'Personalizado' },
+  ];
+  const [period, setPeriod] = React.useState('month');
+  const [chartData, setChartData] = React.useState([
+    { periodo: 'Jan/24', precoMedio: 250, quantidade: 1200 },
+    { periodo: 'Fev/24', precoMedio: 230, quantidade: 900 },
+    { periodo: 'Mar/24', precoMedio: 270, quantidade: 1500 },
+    { periodo: 'Abr/24', precoMedio: 260, quantidade: 1100 },
+  ]);
   
   useEffect(() => {
     const fetchDashboardData = async () => {
