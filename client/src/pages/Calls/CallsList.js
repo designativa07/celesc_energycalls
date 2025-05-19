@@ -19,7 +19,6 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
-  Alert,
   IconButton as MuiIconButton,
   Collapse,
   Tooltip,
@@ -30,7 +29,6 @@ import {
   Add as AddIcon,
   Search as SearchIcon,
   FilterList as FilterListIcon,
-  SortByAlpha as SortIcon,
   Clear as ClearIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
@@ -152,16 +150,6 @@ const CallsList = () => {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
-    });
-  };
-  
-  const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
     });
   };
   

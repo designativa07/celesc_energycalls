@@ -8,9 +8,6 @@ import {
   Chip,
   Button,
   Divider,
-  TextField,
-  FormControlLabel,
-  Switch,
   Tab,
   Tabs,
   Table,
@@ -31,8 +28,7 @@ import {
   Edit as EditIcon,
   Save as SaveIcon,
   Check as CheckIcon,
-  Cancel as CancelIcon,
-  Business as BusinessIcon
+  Cancel as CancelIcon
 } from '@mui/icons-material';
 import api from '../../api/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -108,59 +104,57 @@ const CounterpartDetail = () => {
   const [accessCodeError, setAccessCodeError] = useState('');
   const [accessCodeSuccess, setAccessCodeSuccess] = useState('');
   
-  // Função para buscar os detalhes da contraparte
-  const fetchCounterpartDetails = async () => {
-    setLoading(true);
-    setError(null);
-    
-    // Evita a chamada API quando estamos na rota de criação
-    if (id === 'create') {
-      setLoading(false);
-      return;
-    }
-    
-    try {
-      const response = await api.get(`/counterparts/${id}`);
-      setCounterpart(response.data);
-      setFormData({
-        companyName: response.data.companyName || '',
-        cnpj: response.data.cnpj || '',
-        contactName: response.data.contactName || '',
-        email: response.data.email || '',
-        phone: response.data.phone || '',
-        active: response.data.active !== undefined ? response.data.active : true,
-        notes: response.data.notes || ''
-      });
-    } catch (error) {
-      setError('Erro ao buscar detalhes da contraparte. Por favor, tente novamente.');
-      console.error('Erro ao buscar contraparte:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Função para buscar propostas da contraparte
-  const fetchCounterpartProposals = async () => {
-    setProposalsLoading(true);
-    
-    // Evita a chamada API quando estamos na rota de criação
-    if (id === 'create') {
-      setProposalsLoading(false);
-      return;
-    }
-    
-    try {
-      const response = await api.get(`/proposals/counterpart/${id}`);
-      setProposals(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar propostas:', error);
-    } finally {
-      setProposalsLoading(false);
-    }
-  };
-  
   // Carregar dados ao montar o componente
   useEffect(() => {
+    const fetchCounterpartDetails = async () => {
+      setLoading(true);
+      setError(null);
+      
+      // Evita a chamada API quando estamos na rota de criação
+      if (id === 'create') {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const response = await api.get(`/counterparts/${id}`);
+        setCounterpart(response.data);
+        setFormData({
+          companyName: response.data.companyName || '',
+          cnpj: response.data.cnpj || '',
+          contactName: response.data.contactName || '',
+          email: response.data.email || '',
+          phone: response.data.phone || '',
+          active: response.data.active !== undefined ? response.data.active : true,
+          notes: response.data.notes || ''
+        });
+      } catch (error) {
+        setError('Erro ao buscar detalhes da contraparte. Por favor, tente novamente.');
+        console.error('Erro ao buscar contraparte:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchCounterpartProposals = async () => {
+      setProposalsLoading(true);
+      
+      // Evita a chamada API quando estamos na rota de criação
+      if (id === 'create') {
+        setProposalsLoading(false);
+        return;
+      }
+      
+      try {
+        const response = await api.get(`/proposals/counterpart/${id}`);
+        setProposals(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar propostas:', error);
+      } finally {
+        setProposalsLoading(false);
+      }
+    };
+
     fetchCounterpartDetails();
     fetchCounterpartProposals();
   }, [id]);
@@ -168,16 +162,6 @@ const CounterpartDetail = () => {
   // Gerenciamento de abas
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
-  };
-  
-  // Manipuladores de formulário
-  const handleChange = (e) => {
-    const { name, value, checked } = e.target;
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'active' ? checked : value
-    }));
   };
   
   const handleSubmit = async (e) => {

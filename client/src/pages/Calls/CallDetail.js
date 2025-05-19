@@ -27,7 +27,6 @@ import {
 import Grid from '@mui/material/Grid';
 import {
   Edit as EditIcon,
-  Save as SaveIcon,
   Check as CheckIcon,
   Cancel as CancelIcon,
   Description as FileIcon
@@ -74,24 +73,23 @@ const CallDetail = () => {
   const [cancelReason, setCancelReason] = useState('');
   const [registrationInfo, setRegistrationInfo] = useState('');
   
-  // Função para buscar os detalhes da chamada
-  const fetchCallDetails = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await api.get(`/calls/${id}`);
-      setCall(response.data);
-    } catch (error) {
-      setError('Erro ao buscar detalhes da chamada. Por favor, tente novamente.');
-      console.error('Erro ao buscar chamada:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   // Carregar chamada ao montar o componente
   useEffect(() => {
+    const fetchCallDetails = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await api.get(`/calls/${id}`);
+        setCall(response.data);
+      } catch (error) {
+        setError('Erro ao buscar detalhes da chamada. Por favor, tente novamente.');
+        console.error('Erro ao buscar chamada:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCallDetails();
   }, [id]);
   

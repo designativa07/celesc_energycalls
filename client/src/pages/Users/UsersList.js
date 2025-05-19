@@ -32,7 +32,6 @@ import {
   Add as AddIcon,
   Search as SearchIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
   Check as CheckIcon,
   Block as BlockIcon
 } from '@mui/icons-material';
@@ -60,30 +59,29 @@ const UsersList = () => {
     newStatus: null
   });
   
-  // Buscar lista de usuários
-  const fetchUsers = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Construir query params para filtros
-      let queryParams = '';
-      if (roleFilter) queryParams += `role=${roleFilter}&`;
-      if (statusFilter !== '') queryParams += `active=${statusFilter}&`;
-      
-      const response = await api.get(`/users${queryParams ? `?${queryParams}` : ''}`);
-      setUsers(response.data);
-      setFilteredUsers(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-      setError('Falha ao carregar usuários. Verifique se você tem permissões de administrador.');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Carregar usuários quando o componente montar
+  // Carregar usuários quando o componente montar ou filtros mudarem
   useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Construir query params para filtros
+        let queryParams = '';
+        if (roleFilter) queryParams += `role=${roleFilter}&`;
+        if (statusFilter !== '') queryParams += `active=${statusFilter}&`;
+        
+        const response = await api.get(`/users${queryParams ? `?${queryParams}` : ''}`);
+        setUsers(response.data);
+        setFilteredUsers(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
+        setError('Falha ao carregar usuários. Verifique se você tem permissões de administrador.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUsers();
   }, [roleFilter, statusFilter]);
   

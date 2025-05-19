@@ -10,8 +10,7 @@ import {
   FormControlLabel,
   Switch,
   Alert,
-  CircularProgress,
-  Container
+  CircularProgress
 } from '@mui/material';
 import {
   Save as SaveIcon,

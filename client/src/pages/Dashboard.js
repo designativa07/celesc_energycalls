@@ -5,11 +5,8 @@ import {
   Typography,
   Paper,
   Button,
-  Alert,
-  CircularProgress,
   Card,
   CardContent,
-  CardActions,
   Divider,
   Container,
   Skeleton,
@@ -82,18 +79,6 @@ const Dashboard = () => {
     
     fetchDashboardData();
   }, []);
-  
-  // Função para obter o rótulo do status
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'draft': return 'Rascunho';
-      case 'open': return 'Aberta';
-      case 'closed': return 'Fechada';
-      case 'completed': return 'Concluída';
-      case 'canceled': return 'Cancelada';
-      default: return status.charAt(0).toUpperCase() + status.slice(1);
-    }
-  };
   
   // Função para obter a cor do status usando o tema
   const getStatusChipProps = (status) => {
