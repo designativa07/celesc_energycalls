@@ -16,7 +16,13 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import api from '../api/api';
@@ -28,7 +34,6 @@ import {
   Group as GroupIcon,
   ErrorOutline as ErrorOutlineIcon
 } from '@mui/icons-material';
-import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // Função auxiliar para formatar datas
 const formatDate = (dateString) => {
@@ -321,22 +326,28 @@ const Dashboard = () => {
           </FormControl>
         </Box>
         {chartData && chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="periodo" />
-              <YAxis yAxisId="left" unit=" R$" label={{ value: 'Preço Médio', angle: -90, position: 'insideLeft', offset: -10 }} />
-              <YAxis yAxisId="right" orientation="right" unit=" MWh" label={{ value: 'Quantidade', angle: 90, position: 'insideRight', offset: -10 }} />
-              <Tooltip formatter={(value, name, props) => {
-                if (name === 'Preço Médio (R$/MWh)') return [`R$ ${value.toFixed(2)}`, 'Preço Médio'];
-                if (name === 'Quantidade (MWh)') return [`${value} MWh`, 'Quantidade'];
-                return [value, name];
-              }} />
-              <Legend />
-              <Bar yAxisId="right" dataKey="quantidade" name="Quantidade (MWh)" fill={theme.palette.primary.main} barSize={30} />
-              <Line yAxisId="left" type="monotone" dataKey="precoMedio" name="Preço Médio (R$/MWh)" stroke={theme.palette.secondary.main} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Período</TableCell>
+                  <TableCell align="right">Preço Médio (R$/MWh)</TableCell>
+                  <TableCell align="right">Quantidade (MWh)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {chartData.map((row) => (
+                  <TableRow key={row.periodo}>
+                    <TableCell component="th" scope="row">
+                      {row.periodo}
+                    </TableCell>
+                    <TableCell align="right">R$ {row.precoMedio.toFixed(2)}</TableCell>
+                    <TableCell align="right">{row.quantidade}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         ) : (
           <Typography sx={{ textAlign: 'center', py: 5 }}>
             Não há dados para exibir no gráfico para o período selecionado.
