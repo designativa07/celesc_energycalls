@@ -99,7 +99,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   minHeight: '64px',
   [theme.breakpoints.down('sm')]: {
     minHeight: '56px',
-  }
+  },
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(1),
 }));
 
 const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
@@ -218,14 +220,10 @@ const Layout = () => {
   const drawerContent = (
     <>
       <DrawerHeader>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 700, color: theme.palette.primary.main }}>
-          CELESC
-        </Typography>
-        {isMobile && (
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        )}
+        <img src="/logo-celesc-horizontal-peq.png" alt="Celesc Logo" style={{ height: '32px', marginRight: 'auto' }} />
+        <IconButton onClick={handleDrawerClose} sx={{ color: theme.palette.text.secondary }}>
+          <ChevronLeftIcon />
+        </IconButton>
       </DrawerHeader>
       <Divider />
       <List component="nav">
@@ -273,139 +271,112 @@ const Layout = () => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBarStyled position="fixed" open={open && !isMobile}>
-        <Toolbar>
+      <AppBarStyled position="fixed" open={open} elevation={1}>
+        <Toolbar sx={{ minHeight: '64px !important', [theme.breakpoints.down('sm')]: { minHeight: '56px !important' } }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{
-              mr: 2,
-              ...(open && !isMobile && { display: 'none' }),
-            }}
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{
-              flexGrow: 1,
-              fontWeight: 600,
-              background: theme.palette.mode === 'dark'
-                ? `linear-gradient(90deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`
-                : `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
             EnergyCalls - CELESC
           </Typography>
-
-          <Tooltip title={theme.palette.mode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}>
-            <IconButton
-              onClick={colorMode.toggleColorMode}
-              color="inherit"
-              sx={{ mx: 0.5 }}
-            >
-              {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-          </Tooltip>
-
+          <IconButton onClick={colorMode.toggleColorMode} color="inherit" sx={{ mr: 1 }}>
+            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <DarkModeIcon />}
+          </IconButton>
+          
           <Tooltip title="Notificações">
-            <IconButton
-              color="inherit"
-              sx={{ mx: 0.5 }}
-            >
-              <Badge badgeContent={user?.notificationsCount || 0} color="error"> 
-                <NotificationsIcon />
-              </Badge>
+            <IconButton color="inherit" sx={{ mr: 0.5 }}>
+                <Badge badgeContent={user?.notificationsCount || 0} color="error">
+                    <NotificationsIcon />
+                </Badge>
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Perfil do Usuário">
-            <IconButton
-              onClick={handleMenu}
-              color="inherit"
-              sx={{ mx: 0.5 }}
-            >
-              <UserAvatar>
-                {user?.name ? user.name.charAt(0).toUpperCase() : <AccountCircle />}
-              </UserAvatar>
-            </IconButton>
-          </Tooltip>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            PaperProps={{
-              elevation: 0,
-              sx: {
-                overflow: 'visible',
-                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
-                mt: 1.5,
-                '& .MuiAvatar-root': {
-                  width: 32,
-                  height: 32,
-                  ml: -0.5,
-                  mr: 1,
-                },
-                '&:before': {
-                  content: '""',
-                  display: 'block',
-                  position: 'absolute',
-                  top: 0,
-                  right: 14,
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translateY(-50%) rotate(45deg)',
-                  zIndex: 0,
-                },
-              },
-            }}
-          >
-            <MenuItem onClick={() => { navigate('/profile'); handleClose(); }}>
-              <Avatar sx={{ width: 28, height: 28, mr: 1.5, bgcolor: theme.palette.primary.light}} /> Meu Perfil
-            </MenuItem>
-            <Divider sx={{ my: 0.5 }} />
-            <MenuItem onClick={handleLogout} sx={{ color: theme.palette.error.main }}>
-              <ListItemIcon sx={{color: theme.palette.error.main }}>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              Sair
-            </MenuItem>
-          </Menu>
+          {user && (
+            <>
+              <Tooltip title="Configurações da Conta">
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <UserAvatar>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</UserAvatar>
+                </IconButton>
+              </Tooltip>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                PaperProps={{
+                  elevation: 2,
+                  sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.12))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                  },
+                }}                
+              >
+                <MenuItem onClick={handleClose} sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', pointerEvents: 'none'}}>
+                  <Typography variant="subtitle1" sx={{fontWeight: 'bold'}}>{user.name}</Typography>
+                  <Typography variant="caption">{user.email}</Typography>
+                </MenuItem>
+                <Divider sx={{my: 0.5}}/>
+                <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>
+                  <ListItemIcon>
+                    <AccountCircle fontSize="small" />
+                  </ListItemIcon>
+                  Minha Conta
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
+                  Sair
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </Toolbar>
       </AppBarStyled>
       <Drawer
-        variant={isMobile ? "temporary" : "persistent"}
-        anchor="left"
-        open={open}
-        onClose={handleDrawerClose}
-        ModalProps={{
-          keepMounted: true,
-        }}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            borderRight: 'none',
+            backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[50] : theme.palette.background.paper, 
           },
         }}
+        variant={isMobile ? "temporary" : "persistent"}
+        anchor="left"
+        open={open}
+        onClose={handleDrawerClose}
       >
         {drawerContent}
       </Drawer>

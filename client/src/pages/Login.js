@@ -84,16 +84,7 @@ const Login = () => {
             borderRadius: theme.shape.borderRadius * 1.5,
           }}
         >
-          <Avatar 
-            sx={{ 
-              m: 1, 
-              bgcolor: 'primary.main', 
-              width: 56,
-              height: 56 
-            }}
-          >
-            <ElectricalServicesIcon fontSize="large" /> 
-          </Avatar>
+          <img src="/logo-celesc-horizontal-peq.png" alt="Celesc Logo" style={{ height: '40px', marginBottom: theme.spacing(2) }} />
           <Typography component="h1" variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
             Acessar Plataforma
           </Typography>

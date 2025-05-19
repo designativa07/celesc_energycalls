@@ -16,7 +16,6 @@ import {
   Alert,
   CircularProgress,
   Divider,
-  Tooltip,
   IconButton
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -30,7 +29,6 @@ import { useTheme } from '@mui/material/styles';
 const CallCreate = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState(null);
   
@@ -101,7 +99,7 @@ const CallCreate = () => {
         </Box>
       </Box>
       
-      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: theme.shape.borderRadius * 1.5 }}>
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: theme.shape.borderRadius }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
