@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -104,38 +104,37 @@ const CounterpartDetail = () => {
   const [accessCodeError, setAccessCodeError] = useState('');
   const [accessCodeSuccess, setAccessCodeSuccess] = useState('');
   
+  const fetchCounterpartDetails = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    if (id === 'create') {
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      const response = await api.get(`/counterparts/${id}`);
+      setCounterpart(response.data);
+      setFormData({
+        companyName: response.data.companyName || '',
+        cnpj: response.data.cnpj || '',
+        contactName: response.data.contactName || '',
+        email: response.data.email || '',
+        phone: response.data.phone || '',
+        active: response.data.active !== undefined ? response.data.active : true,
+        notes: response.data.notes || ''
+      });
+    } catch (error) {
+      setError('Erro ao buscar detalhes da contraparte. Por favor, tente novamente.');
+      console.error('Erro ao buscar contraparte:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+  
   // Carregar dados ao montar o componente
   useEffect(() => {
-    const fetchCounterpartDetails = async () => {
-      setLoading(true);
-      setError(null);
-      
-      // Evita a chamada API quando estamos na rota de criação
-      if (id === 'create') {
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        const response = await api.get(`/counterparts/${id}`);
-        setCounterpart(response.data);
-        setFormData({
-          companyName: response.data.companyName || '',
-          cnpj: response.data.cnpj || '',
-          contactName: response.data.contactName || '',
-          email: response.data.email || '',
-          phone: response.data.phone || '',
-          active: response.data.active !== undefined ? response.data.active : true,
-          notes: response.data.notes || ''
-        });
-      } catch (error) {
-        setError('Erro ao buscar detalhes da contraparte. Por favor, tente novamente.');
-        console.error('Erro ao buscar contraparte:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchCounterpartProposals = async () => {
       setProposalsLoading(true);
       
@@ -157,7 +156,7 @@ const CounterpartDetail = () => {
 
     fetchCounterpartDetails();
     fetchCounterpartProposals();
-  }, [id]);
+  }, [id, fetchCounterpartDetails]);
   
   // Gerenciamento de abas
   const handleTabChange = (event, newValue) => {

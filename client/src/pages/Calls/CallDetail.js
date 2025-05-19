@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -73,25 +73,25 @@ const CallDetail = () => {
   const [cancelReason, setCancelReason] = useState('');
   const [registrationInfo, setRegistrationInfo] = useState('');
   
+  const fetchCallDetails = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await api.get(`/calls/${id}`);
+      setCall(response.data);
+    } catch (error) {
+      setError('Erro ao buscar detalhes da chamada. Por favor, tente novamente.');
+      console.error('Erro ao buscar chamada:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
   // Carregar chamada ao montar o componente
   useEffect(() => {
-    const fetchCallDetails = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await api.get(`/calls/${id}`);
-        setCall(response.data);
-      } catch (error) {
-        setError('Erro ao buscar detalhes da chamada. Por favor, tente novamente.');
-        console.error('Erro ao buscar chamada:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCallDetails();
-  }, [id]);
+  }, [id, fetchCallDetails]);
   
   // Gerenciamento de abas
   const handleTabChange = (event, newValue) => {

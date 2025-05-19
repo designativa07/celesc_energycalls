@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
-  Avatar,
   Button,
   TextField,
   Link,
@@ -15,11 +14,9 @@ import {
   Divider
 } from '@mui/material';
 import {
-  LockOutlined as LockOutlinedIcon,
   Visibility,
   VisibilityOff,
-  Business as BusinessIcon,
-  ElectricalServices as ElectricalServicesIcon
+  Business as BusinessIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '@mui/material/styles';
