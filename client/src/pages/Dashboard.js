@@ -28,7 +28,7 @@ import {
   Group as GroupIcon,
   ErrorOutline as ErrorOutlineIcon
 } from '@mui/icons-material';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts';
+import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // Função auxiliar para formatar datas
 const formatDate = (dateString) => {
@@ -52,7 +52,6 @@ const Dashboard = () => {
     { value: 'month', label: 'Mensal' },
     { value: 'week', label: 'Semanal' },
     { value: 'year', label: 'Anual' },
-    { value: 'custom', label: 'Personalizado' },
   ];
   const [period, setPeriod] = React.useState('month');
   const [chartData, setChartData] = React.useState([
@@ -306,7 +305,7 @@ const Dashboard = () => {
       <Card sx={{ p: {xs: 2, sm: 3}, mt: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Gráfico de Preço Médio e Quantidade de Energia Comprada
+            Preço Médio & Quantidade Comprada
           </Typography>
           <FormControl size="small" sx={{ minWidth: 140 }}>
             <InputLabel>Período</InputLabel>
@@ -321,18 +320,28 @@ const Dashboard = () => {
             </Select>
           </FormControl>
         </Box>
-        <ResponsiveContainer width="100%" height={300}>
-          <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="periodo" />
-            <YAxis yAxisId="left" label={{ value: 'Preço Médio (R$/MWh)', angle: -90, position: 'insideLeft' }} />
-            <YAxis yAxisId="right" orientation="right" label={{ value: 'Quantidade (MWh)', angle: 90, position: 'insideRight' }} />
-            <Tooltip />
-            <Legend />
-            <Bar yAxisId="right" dataKey="quantidade" name="Quantidade (MWh)" fill="#1976d2" barSize={30} />
-            <Line yAxisId="left" type="monotone" dataKey="precoMedio" name="Preço Médio (R$/MWh)" stroke="#ff9800" strokeWidth={3} dot />
-          </ComposedChart>
-        </ResponsiveContainer>
+        {chartData && chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="periodo" />
+              <YAxis yAxisId="left" unit=" R$" label={{ value: 'Preço Médio', angle: -90, position: 'insideLeft', offset: -10 }} />
+              <YAxis yAxisId="right" orientation="right" unit=" MWh" label={{ value: 'Quantidade', angle: 90, position: 'insideRight', offset: -10 }} />
+              <Tooltip formatter={(value, name, props) => {
+                if (name === 'Preço Médio (R$/MWh)') return [`R$ ${value.toFixed(2)}`, 'Preço Médio'];
+                if (name === 'Quantidade (MWh)') return [`${value} MWh`, 'Quantidade'];
+                return [value, name];
+              }} />
+              <Legend />
+              <Bar yAxisId="right" dataKey="quantidade" name="Quantidade (MWh)" fill={theme.palette.primary.main} barSize={30} />
+              <Line yAxisId="left" type="monotone" dataKey="precoMedio" name="Preço Médio (R$/MWh)" stroke={theme.palette.secondary.main} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        ) : (
+          <Typography sx={{ textAlign: 'center', py: 5 }}>
+            Não há dados para exibir no gráfico para o período selecionado.
+          </Typography>
+        )}
       </Card>
     </Box>
   );

@@ -25,6 +25,7 @@ import { ptBR } from 'date-fns/locale';
 import api from '../../api/api';
 import { Save as SaveIcon, Publish as PublishIcon, Cancel as CancelIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const CallCreate = () => {
   const navigate = useNavigate();
